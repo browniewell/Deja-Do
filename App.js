@@ -17,23 +17,15 @@ const DATA = [
   },
 ];
 
-const Item = ({ item, onPress, backgroundColor, textColor }) => (
-  <Pressable onPress={onPress} style={[styles.item, backgroundColor]}>
-    <Text style={[styles.title, textColor]}>{item.title}</Text>
-    <Progress.Bar progress={ 0.4 } width={ null } style={{ marginTop: 5 }}/>
-  </Pressable>
-);
-
 const App = () => {
 
   const renderItem = ({ item }) => {
 
     return (
-      <Item
-        item={item}
-        backgroundColor= "white"
-        textColor= "black"
-      />
+      <Pressable style={[styles.item, "white" ]}>
+        <Text style={[styles.title, "black" ]}>{item.title}</Text>
+        <Progress.Bar progress={ 0.4 } width={ null } style={{ marginTop: 5 }}/>
+      </Pressable>
     );
   };
 
