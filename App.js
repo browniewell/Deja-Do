@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { FlatList, Pressable, SafeAreaView, StatusBar, StyleSheet, Text, View } from "react-native";
+import * as Progress from 'react-native-progress'
 
 const DATA = [
   {
@@ -17,24 +18,21 @@ const DATA = [
 ];
 
 const Item = ({ item, onPress, backgroundColor, textColor }) => (
-  <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
+  <Pressable onPress={onPress} style={[styles.item, backgroundColor]}>
     <Text style={[styles.title, textColor]}>{item.title}</Text>
-  </TouchableOpacity>
+    <Progress.Bar progress={ 0.4 } width={ null } style={{ marginTop: 5 }}/>
+  </Pressable>
 );
 
 const App = () => {
-  const [selectedId, setSelectedId] = useState(null);
 
   const renderItem = ({ item }) => {
-    const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#f9c2ff";
-    const textColor = item.id === selectedId ? 'white' : 'black';
 
     return (
       <Item
         item={item}
-        onPress={() => setSelectedId(item.id)}
-        backgroundColor={{ backgroundColor }}
-        textColor={{ color: textColor }}
+        backgroundColor= "white"
+        textColor= "black"
       />
     );
   };
@@ -45,7 +43,6 @@ const App = () => {
         data={DATA}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        extraData={selectedId}
       />
     </SafeAreaView>
   );
@@ -57,13 +54,28 @@ const styles = StyleSheet.create({
     marginTop: StatusBar.currentHeight || 0,
   },
   item: {
-    padding: 20,
+    padding: 10,
     marginVertical: 8,
     marginHorizontal: 16,
   },
   title: {
-    fontSize: 32,
+    fontSize: 18,
   },
+  progressBar: {
+    marginTop: 5,
+    height: 20,
+    width: '100%',
+    backgroundColor: 'white',
+    borderColor: '#000',
+    borderWidth: 1,
+    borderRadius: 5,
+    flexDirection: "row",
+  },
+  progressText: {
+    flex: 1,
+    textAlign: "right",
+    paddingRight: 4,
+  }
 });
 
 export default App;
