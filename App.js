@@ -4,7 +4,7 @@ import * as Progress from 'react-native-progress'
 import TodoListItem from "./components/todoListItem";
 
 
-class ToDoItem{
+class TodoItem{
   constructor(title, daysRemaining, totalDuration){
     this.title = title;
     this.daysRemaining = daysRemaining;
@@ -18,9 +18,9 @@ class ToDoItem{
 
 const App = () => {
   const [todos, setTodos] = useState([
-    new ToDoItem("First Item", 10, 14),
-    new ToDoItem("Second Item", 1, 3),
-    new ToDoItem("Third Item", 1, 5)
+    new TodoItem("First Item", 10, 14),
+    new TodoItem("Second Item", 1, 3),
+    new TodoItem("Third Item", 1, 5)
   ]);
 
   return (

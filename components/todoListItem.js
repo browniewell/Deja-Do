@@ -5,9 +5,9 @@ import * as Progress from 'react-native-progress'
 export default function TodoListItem({ item }){
 
     return (
-        <Pressable style={[styles.item, "white" ]}>
-          <Text style={[styles.title, "black" ]}>{item.title}</Text>
-          <Progress.Bar progress={ item.getProgress() } width={ null } style={{ marginTop: 5 }}/>
+        <Pressable style={ styles.item }>
+          <Text style={ styles.title }>{ item.title }</Text>
+          <Progress.Bar progress={ item.getProgress() } width={ null } style={ styles.progressBar }/>
         </Pressable>
     );
 }
@@ -17,9 +17,14 @@ const styles = StyleSheet.create({
       padding: 10,
       marginVertical: 8,
       marginHorizontal: 16,
+      color: "white"
     },
     title: {
       fontSize: 18,
+      color: "black"
+    },
+    progressBar: {
+      marginTop: 5
     }
   });
   
