@@ -4,23 +4,12 @@ import * as Progress from 'react-native-progress'
 import TodoListItem from "./components/todoListItem";
 
 
-class TodoItem{
-  constructor(title, daysRemaining, totalDuration){
-    this.title = title;
-    this.daysRemaining = daysRemaining;
-    this.totalDuration = totalDuration;
-  }
-
-  getProgress(){
-    return (this.totalDuration - this.daysRemaining) / this.totalDuration;
-  }
-}
-
 const App = () => {
   const [todos, setTodos] = useState([
-    new TodoItem("First Item", 10, 14),
-    new TodoItem("Second Item", 1, 3),
-    new TodoItem("Third Item", 1, 5)
+    new TodoItem("First Item", new Date(2022, 2, 15), 30),
+    new TodoItem("Second Item", new Date(2022, 2, 25), 10),
+    new TodoItem("Third Item", new Date(2022, 2, 30), 5),
+    new TodoItem("Future Item", new Date(2022, 3, 5), 5),
   ]);
 
   return (
@@ -43,3 +32,38 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+
+class TodoItem{
+  constructor(title, dueDate, duration){
+    this.title = title;
+    this.duration = duration;
+    this.dueDate = dueDate
+  }
+
+  getProgress(){
+    function treatAsUTC(date) {
+      var result = new Date(date);
+      result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
+      return result;
+    }
+
+    function daysBetween(start, end){
+      var millisecondsPerDay = 24 * 60 * 60 * 1000;
+      var daysBetween = (treatAsUTC(end) - treatAsUTC(start)) / millisecondsPerDay;
+      return daysBetween;
+    }
+
+    // FIXME: If the due date is farther out than the current date plus the duration, the progress bar will be empty until that is no longer the case. This is only applicable on the first occurrence.
+    var daysRemaining = daysBetween(Date.now(), this.dueDate);
+    var progress = (this.duration - daysRemaining) / this.duration;
+    
+    return progress;
+  }
+}
+
+Date.prototype.addDays = function(days) {
+  var date = new Date(this.valueOf());
+  date.setDate(date.getDate() + days);
+  return date;
+}
