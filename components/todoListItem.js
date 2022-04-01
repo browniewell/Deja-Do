@@ -8,6 +8,10 @@ export default function TodoListItem({ item }){
         <Pressable style={ styles.item }>
           <Text style={ styles.title }>{ item.title }</Text>
           <Progress.Bar progress={ item.getProgress() } width={ null } style={ styles.progressBar }/>
+          <View style={ styles.dateLine }>
+            <Text style= { styles.daysRemaining }>{ item.daysRemaining }</Text>
+            <Text style= { styles.dueDate }>{ item.dueDate.toDateString() }</Text>
+          </View>
         </Pressable>
     );
 }
@@ -25,6 +29,19 @@ const styles = StyleSheet.create({
     },
     progressBar: {
       marginTop: 5
+    },
+    dateLine: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 3
+    },
+    dueDate: {
+      // textAlign: "right",
+      // marginTop: 3
+    }, 
+    daysRemaining: {
+      // textAlign: "left",
+      // marginTop: 3
     }
   });
   

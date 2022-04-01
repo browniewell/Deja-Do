@@ -38,7 +38,8 @@ class TodoItem{
   constructor(title, dueDate, duration){
     this.title = title;
     this.duration = duration;
-    this.dueDate = dueDate
+    this.dueDate = dueDate;
+    this.daysRemaining = null;
   }
 
   getProgress(){
@@ -55,8 +56,8 @@ class TodoItem{
     }
 
     // FIXME: If the due date is farther out than the current date plus the duration, the progress bar will be empty until that is no longer the case. This is only applicable on the first occurrence.
-    var daysRemaining = daysBetween(Date.now(), this.dueDate);
-    var progress = (this.duration - daysRemaining) / this.duration;
+    this.daysRemaining = daysBetween(Date.now(), this.dueDate);
+    var progress = (this.duration - this.daysRemaining) / this.duration;
     
     return progress;
   }
