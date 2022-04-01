@@ -9,7 +9,7 @@ const App = () => {
     new TodoItem("First Item", new Date(2022, 2, 15), 30),
     new TodoItem("Second Item", new Date(2022, 2, 25), 10),
     new TodoItem("Third Item", new Date(2022, 2, 30), 5),
-    new TodoItem("Future Item", new Date(2022, 3, 3), 8),
+    new TodoItem("Future Item", new Date(2022, 3, 5), 5),
   ]);
 
   return (
@@ -35,11 +35,10 @@ export default App;
 
 
 class TodoItem{
-  constructor(title, startDate, duration){
+  constructor(title, dueDate, duration){
     this.title = title;
     this.duration = duration;
-    this.startDate = startDate;
-    this.dueDate = null;
+    this.dueDate = dueDate
   }
 
   getProgress(){
@@ -55,10 +54,7 @@ class TodoItem{
       return daysBetween;
     }
 
-    this.dueDate = this.startDate.addDays(this.duration);
-
-    // FIXME: If the start date is in the future, use Start Date - Duration as the initial start date so we can calculate what the "progress" should show
-
+    // FIXME: If the due date is farther out than the current date plus the duration, the progress bar will be empty until that is no longer the case. This is only applicable on the first occurrence.
     var daysRemaining = daysBetween(Date.now(), this.dueDate);
     var progress = (this.duration - daysRemaining) / this.duration;
     
