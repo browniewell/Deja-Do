@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {
   FlatList,
+  Modal,
   Pressable,
   SafeAreaView,
   StatusBar,
@@ -10,8 +11,11 @@ import {
 } from 'react-native';
 import * as Progress from 'react-native-progress';
 import TodoListItem from './components/todoListItem';
+import ActionButton from 'react-native-action-button';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 const App = () => {
+  const [modalOpen, setModalOpen] = useState(false);
   const [todos, setTodos] = useState([
     new TodoItem('First Item', new Date(2022, 3, 15), 30),
     new TodoItem('Second Item', new Date(2022, 3, 5), 10),
@@ -22,9 +26,24 @@ const App = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Recurrence</Text>
+
+      <Modal visible={modalOpen} animationType="slide">
+        <SafeAreaView>
+          <MaterialIcon
+            name="close"
+            size={24}
+            onPress={() => setModalOpen(false)}
+          />
+        </SafeAreaView>
+      </Modal>
+
       <FlatList
         data={todos}
         renderItem={({item}) => <TodoListItem item={item} />}
+      />
+      <ActionButton
+        buttonColor="rgba(231,76,60,1)"
+        onPress={() => setModalOpen(true)}
       />
     </SafeAreaView>
   );
@@ -39,6 +58,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 30,
     textAlign: 'center',
+  },
+  actionButtonIcon: {
+    fontSize: 20,
+    height: 22,
+    color: 'white',
   },
 });
 
