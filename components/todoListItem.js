@@ -37,7 +37,7 @@ const daysRemainingMessage = function (numDays) {
 const styles = StyleSheet.create({
   item: {
     padding: 10,
-    marginVertical: 8,
+    marginVertical: 5,
     marginHorizontal: 16,
     color: 'white',
   },

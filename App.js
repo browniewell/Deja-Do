@@ -21,6 +21,7 @@ const App = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>Recurrence</Text>
       <FlatList
         data={todos}
         renderItem={({item}) => <TodoListItem item={item} />}
@@ -33,6 +34,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: StatusBar.currentHeight || 0,
+  },
+  header: {
+    fontWeight: 'bold',
+    fontSize: 30,
+    textAlign: 'center',
   },
 });
 
