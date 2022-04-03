@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+  Button,
   FlatList,
   Modal,
   Pressable,
@@ -7,6 +8,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import * as Progress from 'react-native-progress';
@@ -16,6 +18,7 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 const App = () => {
   const [modalOpen, setModalOpen] = useState(false);
+
   const [todos, setTodos] = useState([
     new TodoItem('First Item', new Date(2022, 3, 15), 30),
     new TodoItem('Second Item', new Date(2022, 3, 5), 10),
@@ -23,17 +26,68 @@ const App = () => {
     new TodoItem('Fourth Item', new Date(2022, 3, 2), 4),
   ]);
 
+  const [title, setTitle] = useState('');
+  const titleChangeHandler = val => {
+    setTitle(val);
+  };
+
+  const [dueDate, setDueDate] = useState('');
+  const dueDateChangeHandler = val => {
+    setDueDate(val);
+  };
+
+  const [duration, setDuration] = useState('');
+  const duartionChangeHandler = val => {
+    setDuration(val);
+  };
+
+  const addNewItem = () => {
+    setTodos(prevTodos => {
+      return [...prevTodos, new TodoItem(title, new Date(dueDate), duration)];
+    });
+    setModalOpen(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Recurrence</Text>
 
       <Modal visible={modalOpen} animationType="slide">
-        <SafeAreaView>
-          <MaterialIcon
+        <SafeAreaView style={{flex: 1}}>
+          {/* <MaterialIcon
             name="close"
             size={24}
             onPress={() => setModalOpen(false)}
-          />
+          /> */}
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <TextInput
+              style={styles.inputField}
+              placeholder="Title"
+              onChangeText={titleChangeHandler}
+              returnKeyType="done"
+            />
+            <TextInput
+              style={styles.inputField}
+              placeholder="Due Date"
+              onChangeText={dueDateChangeHandler}
+              returnKeyType="done"
+            />
+            <TextInput
+              style={styles.inputField}
+              placeholder="Duration"
+              onChangeText={duartionChangeHandler}
+              returnKeyType="done"
+            />
+            <View style={{marginTop: 20}}>
+              <Button title="Add" onPress={addNewItem} />
+              <Button title="Cancel" onPress={() => setModalOpen(false)} />
+            </View>
+          </View>
         </SafeAreaView>
       </Modal>
 
@@ -41,6 +95,7 @@ const App = () => {
         data={todos}
         renderItem={({item}) => <TodoListItem item={item} />}
       />
+
       <ActionButton
         buttonColor="rgba(231,76,60,1)"
         onPress={() => setModalOpen(true)}
@@ -63,6 +118,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     height: 22,
     color: 'white',
+  },
+  inputField: {
+    marginVertical: 10,
   },
 });
 
