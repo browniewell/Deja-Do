@@ -15,15 +15,37 @@ import * as Progress from 'react-native-progress';
 import TodoListItem from './components/todoListItem';
 import ActionButton from 'react-native-action-button';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import 'react-native-get-random-values';
+import {v4 as uuidv4} from 'uuid';
 
 const App = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const [todos, setTodos] = useState([
-    new TodoItem('First Item', new Date(2022, 3, 15), 30),
-    new TodoItem('Second Item', new Date(2022, 3, 5), 10),
-    new TodoItem('Third Item', new Date(2022, 3, 9), 5),
-    new TodoItem('Fourth Item', new Date(2022, 3, 2), 4),
+    new TodoItem(
+      'e6552993-ef34-46e6-8b20-1690e90d9fa1',
+      'First Item',
+      new Date(2022, 3, 15),
+      30,
+    ),
+    new TodoItem(
+      '570796d7-4269-43e0-87e0-7dc37eb45e44',
+      'Second Item',
+      new Date(2022, 3, 5),
+      10,
+    ),
+    new TodoItem(
+      '55c893cf-6fe6-4323-8d25-fe4c9f6ce88d',
+      'Third Item',
+      new Date(2022, 3, 9),
+      5,
+    ),
+    new TodoItem(
+      '557b2320-63e1-45a8-ad06-2e6dc70a0fb3',
+      'Fourth Item',
+      new Date(2022, 3, 2),
+      4,
+    ),
   ]);
 
   const [title, setTitle] = useState('');
@@ -42,8 +64,12 @@ const App = () => {
   };
 
   const addNewItem = () => {
+    const uuid = uuidv4();
     setTodos(prevTodos => {
-      return [...prevTodos, new TodoItem(title, new Date(dueDate), duration)];
+      return [
+        ...prevTodos,
+        new TodoItem(uuid, title, new Date(dueDate), duration),
+      ];
     });
     setModalOpen(false);
   };
@@ -127,7 +153,8 @@ const styles = StyleSheet.create({
 export default App;
 
 class TodoItem {
-  constructor(title, dueDate, duration) {
+  constructor(key, title, dueDate, duration) {
+    this.key = key;
     this.title = title;
     this.duration = duration;
     this.dueDate = dueDate;

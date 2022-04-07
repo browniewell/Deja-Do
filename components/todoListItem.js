@@ -12,20 +12,27 @@ import * as Progress from 'react-native-progress';
 
 export default function TodoListItem({item}) {
   return (
-    <Pressable style={styles.item}>
-      <Text style={styles.title}>{item.title}</Text>
-      <Progress.Bar
-        progress={item.getProgress()}
-        width={null}
-        style={styles.progressBar}
-      />
-      <View style={styles.dateLine}>
-        <Text style={styles.daysRemaining}>
-          {item.daysRemaining} {daysRemainingMessage(item.daysRemaining)}
-        </Text>
-        <Text style={styles.dueDate}>{item.dueDate.toDateString()}</Text>
-      </View>
-    </Pressable>
+    <View style={styles.item}>
+      <Pressable
+        style={({pressed}) => [{opacity: pressed ? 0.5 : 1.0}]}
+        onPress={() => console.log(`Tapped ${item.title}`)}
+        onLongPress={() =>
+          console.log(`Long press on ${item.title} - ${item.key}`)
+        }>
+        <Text style={styles.title}>{item.title}</Text>
+        <Progress.Bar
+          progress={item.getProgress()}
+          width={null}
+          style={styles.progressBar}
+        />
+        <View style={styles.dateLine}>
+          <Text style={styles.daysRemaining}>
+            {item.daysRemaining} {daysRemainingMessage(item.daysRemaining)}
+          </Text>
+          <Text style={styles.dueDate}>{item.dueDate.toDateString()}</Text>
+        </View>
+      </Pressable>
+    </View>
   );
 }
 
