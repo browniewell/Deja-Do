@@ -74,6 +74,12 @@ const App = () => {
     setModalOpen(false);
   };
 
+  const deleteItem = key => {
+    setTodos(prevTodos => {
+      return prevTodos.filter(todo => todo.key != key);
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Recurrence</Text>
@@ -119,7 +125,9 @@ const App = () => {
 
       <FlatList
         data={todos}
-        renderItem={({item}) => <TodoListItem item={item} />}
+        renderItem={({item}) => (
+          <TodoListItem item={item} deleteItem={deleteItem} />
+        )}
       />
 
       <ActionButton

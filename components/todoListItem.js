@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+  Alert,
   FlatList,
   Pressable,
   SafeAreaView,
@@ -10,15 +11,13 @@ import {
 } from 'react-native';
 import * as Progress from 'react-native-progress';
 
-export default function TodoListItem({item}) {
+export default function TodoListItem({item, deleteItem}) {
   return (
     <View style={styles.item}>
       <Pressable
         style={({pressed}) => [{opacity: pressed ? 0.5 : 1.0}]}
         onPress={() => console.log(`Tapped ${item.title}`)}
-        onLongPress={() =>
-          console.log(`Long press on ${item.title} - ${item.key}`)
-        }>
+        onLongPress={() => editOrDelete(item.key, item.title, deleteItem)}>
         <Text style={styles.title}>{item.title}</Text>
         <Progress.Bar
           progress={item.getProgress()}
@@ -35,6 +34,22 @@ export default function TodoListItem({item}) {
     </View>
   );
 }
+
+const editOrDelete = (key, title, deleteItem) => {
+  Alert.alert(
+    'Edit or Delete',
+    `Would you like to edit or delete "${title}"?`,
+    [
+      {text: 'Cancel', style: 'cancel'},
+      {text: 'Edit', onPress: () => console.log(`Edit ${title}`)},
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => deleteItem(key),
+      },
+    ],
+  );
+};
 
 const daysRemainingMessage = function (numDays) {
   if (numDays === 1) return 'Day Remaining';
