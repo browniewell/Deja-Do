@@ -14,7 +14,6 @@ import {
 import * as Progress from 'react-native-progress';
 import TodoListItem from './components/todoListItem';
 import ActionButton from 'react-native-action-button';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 

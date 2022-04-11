@@ -10,10 +10,12 @@ import {
   View,
 } from 'react-native';
 import * as Progress from 'react-native-progress';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 export default function TodoListItem({item, deleteItem}) {
   return (
     <View style={styles.item}>
+      <MaterialIcon name="refresh" size={20} />
       <Pressable
         style={({pressed}) => [{opacity: pressed ? 0.5 : 1.0}]}
         onPress={() => console.log(`Tapped ${item.title}`)}
