@@ -12,12 +12,17 @@ import {
 import * as Progress from 'react-native-progress';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
-export default function TodoListItem({item, deleteItem}) {
+export default function TodoListItem({item, deleteItem, updateItem}) {
   return (
     <View style={styles.item}>
-      <MaterialIcon name="refresh" size={20} />
+      <MaterialIcon
+        name="refresh"
+        size={25}
+        style={styles.refreshIcon}
+        onPress={() => updateItem(item)}
+      />
       <Pressable
-        style={({pressed}) => [{opacity: pressed ? 0.5 : 1.0}]}
+        style={({pressed}) => [{opacity: pressed ? 0.5 : 1.0}, {flex: 1}]}
         onPress={() => console.log(`Tapped ${item.title}`)}
         onLongPress={() => editOrDelete(item.key, item.title, deleteItem)}>
         <Text style={styles.title}>{item.title}</Text>
@@ -53,7 +58,7 @@ const editOrDelete = (key, title, deleteItem) => {
   );
 };
 
-const daysRemainingMessage = function (numDays) {
+const daysRemainingMessage = numDays => {
   if (numDays === 1) return 'Day Remaining';
   else return 'Days Remaining';
 };
@@ -62,8 +67,14 @@ const styles = StyleSheet.create({
   item: {
     padding: 10,
     marginVertical: 5,
-    marginHorizontal: 16,
+    marginRight: 15,
+    marginLeft: 5,
     color: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  refreshIcon: {
+    marginRight: 10,
   },
   title: {
     fontSize: 18,

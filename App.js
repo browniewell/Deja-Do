@@ -20,6 +20,8 @@ import {v4 as uuidv4} from 'uuid';
 const App = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
+  const [refresh, setRefresh] = useState(false);
+
   const [todos, setTodos] = useState([
     new TodoItem(
       'e6552993-ef34-46e6-8b20-1690e90d9fa1',
@@ -79,6 +81,12 @@ const App = () => {
     });
   };
 
+  const renewItem = item => {
+    console.log(`RENEW ${item.title}`);
+    item.dueDate = new Date().addDays(item.duration);
+    setRefresh(!refresh);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Recurrence</Text>
@@ -125,8 +133,13 @@ const App = () => {
       <FlatList
         data={todos}
         renderItem={({item}) => (
-          <TodoListItem item={item} deleteItem={deleteItem} />
+          <TodoListItem
+            item={item}
+            deleteItem={deleteItem}
+            updateItem={renewItem}
+          />
         )}
+        extraData={refresh}
       />
 
       <ActionButton
@@ -190,6 +203,11 @@ class TodoItem {
 
     return progress;
   }
+
+  // renewItem() {
+  //   console.log(`RENEW ${this.title}`);
+  //   this.dueDate = new Date('4/22/2022');
+  // }
 }
 
 Date.prototype.addDays = function (days) {
