@@ -14,12 +14,13 @@ import {
 import * as Progress from 'react-native-progress';
 import TodoListItem from './components/todoListItem';
 import ActionButton from 'react-native-action-button';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 
 const App = () => {
   const [modalOpen, setModalOpen] = useState(false);
+
+  const [refresh, setRefresh] = useState(false);
 
   const [todos, setTodos] = useState([
     new TodoItem(
@@ -80,17 +81,18 @@ const App = () => {
     });
   };
 
+  const renewItem = item => {
+    console.log(`RENEW ${item.title}`);
+    item.dueDate = new Date().addDays(item.duration);
+    setRefresh(!refresh);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Recurrence</Text>
 
       <Modal visible={modalOpen} animationType="slide">
         <SafeAreaView style={{flex: 1}}>
-          {/* <MaterialIcon
-            name="close"
-            size={24}
-            onPress={() => setModalOpen(false)}
-          /> */}
           <View
             style={{
               flex: 1,
@@ -126,8 +128,13 @@ const App = () => {
       <FlatList
         data={todos}
         renderItem={({item}) => (
-          <TodoListItem item={item} deleteItem={deleteItem} />
+          <TodoListItem
+            item={item}
+            deleteItem={deleteItem}
+            updateItem={renewItem}
+          />
         )}
+        extraData={refresh}
       />
 
       <ActionButton
