@@ -93,11 +93,6 @@ const App = () => {
 
       <Modal visible={modalOpen} animationType="slide">
         <SafeAreaView style={{flex: 1}}>
-          {/* <MaterialIcon
-            name="close"
-            size={24}
-            onPress={() => setModalOpen(false)}
-          /> */}
           <View
             style={{
               flex: 1,
@@ -203,11 +198,6 @@ class TodoItem {
 
     return progress;
   }
-
-  // renewItem() {
-  //   console.log(`RENEW ${this.title}`);
-  //   this.dueDate = new Date('4/22/2022');
-  // }
 }
 
 Date.prototype.addDays = function (days) {
