@@ -44,9 +44,12 @@ export default function TodoListItem({item, updateItem, editItem}) {
 }
 
 const daysRemainingMessage = numDays => {
-  let daysString = numDays < 0 ? '0' : `${numDays}`;
-  let pluralString = numDays === 1 ? 'Day' : 'Days';
-  return `${daysString} ${pluralString} Remaining`;
+  let pluralString = Math.abs(numDays) === 1 ? 'Day' : 'Days';
+  if (numDays < 0) {
+    return `${Math.abs(numDays)} ${pluralString} Overdue`;
+  } else {
+    return `${numDays} ${pluralString} Remaining`;
+  }
 };
 
 const styles = StyleSheet.create({
