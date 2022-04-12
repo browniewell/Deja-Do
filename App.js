@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Button,
   FlatList,
@@ -18,9 +18,10 @@ import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 
 const App = () => {
-  const [modalOpen, setModalOpen] = useState(false);
-
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [selectedItem, setSelectedItem] = useState('');
 
   const [todos, setTodos] = useState([
     new TodoItem(
@@ -72,13 +73,14 @@ const App = () => {
         new TodoItem(uuid, title, new Date(dueDate), duration),
       ];
     });
-    setModalOpen(false);
+    setCreateModalOpen(false);
   };
 
   const deleteItem = key => {
     setTodos(prevTodos => {
       return prevTodos.filter(todo => todo.key != key);
     });
+    setEditModalOpen(false);
   };
 
   const renewItem = item => {
@@ -87,11 +89,56 @@ const App = () => {
     setRefresh(!refresh);
   };
 
+  const editItem = item => {
+    console.log(`EDIT ${item.title}`);
+    setSelectedItem(item.key);
+    setEditModalOpen(true);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Recurrence</Text>
 
-      <Modal visible={modalOpen} animationType="slide">
+      <Modal visible={editModalOpen} animationType="slide">
+        <SafeAreaView style={{flex: 1}}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <TextInput
+              style={styles.inputField}
+              placeholder="Title"
+              onChangeText={titleChangeHandler}
+              returnKeyType="done"
+            />
+            <TextInput
+              style={styles.inputField}
+              placeholder="Due Date"
+              onChangeText={dueDateChangeHandler}
+              returnKeyType="done"
+            />
+            <TextInput
+              style={styles.inputField}
+              placeholder="Duration"
+              onChangeText={duartionChangeHandler}
+              returnKeyType="done"
+            />
+            <View style={{marginTop: 20}}>
+              <Button title="Save" onPress={addNewItem} />
+              <Button title="Cancel" onPress={() => setEditModalOpen(false)} />
+              <Button
+                title="Delete"
+                color="red"
+                onPress={() => deleteItem(selectedItem)}
+              />
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal visible={createModalOpen} animationType="slide">
         <SafeAreaView style={{flex: 1}}>
           <View
             style={{
@@ -119,7 +166,10 @@ const App = () => {
             />
             <View style={{marginTop: 20}}>
               <Button title="Add" onPress={addNewItem} />
-              <Button title="Cancel" onPress={() => setModalOpen(false)} />
+              <Button
+                title="Cancel"
+                onPress={() => setCreateModalOpen(false)}
+              />
             </View>
           </View>
         </SafeAreaView>
@@ -130,8 +180,8 @@ const App = () => {
         renderItem={({item}) => (
           <TodoListItem
             item={item}
-            deleteItem={deleteItem}
             updateItem={renewItem}
+            editItem={editItem}
           />
         )}
         extraData={refresh}
@@ -139,7 +189,7 @@ const App = () => {
 
       <ActionButton
         buttonColor="rgba(231,76,60,1)"
-        onPress={() => setModalOpen(true)}
+        onPress={() => setCreateModalOpen(true)}
       />
     </SafeAreaView>
   );
