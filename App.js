@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Button,
   FlatList,
@@ -18,9 +18,10 @@ import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 
 const App = () => {
-  const [modalOpen, setModalOpen] = useState(false);
-
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [selectedItem, setSelectedItem] = useState('');
 
   const [todos, setTodos] = useState([
     new TodoItem(
@@ -56,12 +57,12 @@ const App = () => {
 
   const [dueDate, setDueDate] = useState('');
   const dueDateChangeHandler = val => {
-    setDueDate(val);
+    setDueDate(new Date(val));
   };
 
   const [duration, setDuration] = useState('');
   const duartionChangeHandler = val => {
-    setDuration(val);
+    setDuration(Number(val));
   };
 
   const addNewItem = () => {
@@ -72,13 +73,14 @@ const App = () => {
         new TodoItem(uuid, title, new Date(dueDate), duration),
       ];
     });
-    setModalOpen(false);
+    setCreateModalOpen(false);
   };
 
   const deleteItem = key => {
     setTodos(prevTodos => {
       return prevTodos.filter(todo => todo.key != key);
     });
+    setEditModalOpen(false);
   };
 
   const renewItem = item => {
@@ -87,11 +89,68 @@ const App = () => {
     setRefresh(!refresh);
   };
 
+  const editItem = item => {
+    console.log(`EDIT ${item.title}`);
+    setSelectedItem(item.key);
+    setTitle(item.title);
+    setDueDate(item.dueDate);
+    setDuration(item.duration);
+    setEditModalOpen(true);
+  };
+
+  const updateItem = key => {
+    let item = todos.find(x => x.key === key);
+    item.title = title;
+    item.dueDate = new Date(dueDate);
+    item.duration = Number(duration);
+    setEditModalOpen(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Recurrence</Text>
 
-      <Modal visible={modalOpen} animationType="slide">
+      <Modal visible={editModalOpen} animationType="fade">
+        <SafeAreaView style={{flex: 1}}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <TextInput
+              style={styles.inputField}
+              defaultValue={title}
+              onChangeText={titleChangeHandler}
+              returnKeyType="done"
+            />
+            <TextInput
+              style={styles.inputField}
+              // FIXME: Using a placeholder because onChangeText constantly tries to use part of the defaultValue as input and it results in an invalid Date. We can try to add JIT input validation in the onChangeText handler, or we can just use the placeholder for Edit until we have a date picker.
+              placeholder={new Date(dueDate).toDateString()}
+              onChangeText={dueDateChangeHandler}
+              returnKeyType="done"
+            />
+            <TextInput
+              style={styles.inputField}
+              defaultValue={`${duration}`}
+              onChangeText={duartionChangeHandler}
+              returnKeyType="done"
+            />
+            <View style={{marginTop: 20}}>
+              <Button title="Save" onPress={() => updateItem(selectedItem)} />
+              <Button title="Cancel" onPress={() => setEditModalOpen(false)} />
+              <Button
+                title="Delete"
+                color="red"
+                onPress={() => deleteItem(selectedItem)}
+              />
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal visible={createModalOpen} animationType="slide">
         <SafeAreaView style={{flex: 1}}>
           <View
             style={{
@@ -119,7 +178,10 @@ const App = () => {
             />
             <View style={{marginTop: 20}}>
               <Button title="Add" onPress={addNewItem} />
-              <Button title="Cancel" onPress={() => setModalOpen(false)} />
+              <Button
+                title="Cancel"
+                onPress={() => setCreateModalOpen(false)}
+              />
             </View>
           </View>
         </SafeAreaView>
@@ -130,8 +192,8 @@ const App = () => {
         renderItem={({item}) => (
           <TodoListItem
             item={item}
-            deleteItem={deleteItem}
             updateItem={renewItem}
+            editItem={editItem}
           />
         )}
         extraData={refresh}
@@ -139,7 +201,7 @@ const App = () => {
 
       <ActionButton
         buttonColor="rgba(231,76,60,1)"
-        onPress={() => setModalOpen(true)}
+        onPress={() => setCreateModalOpen(true)}
       />
     </SafeAreaView>
   );
