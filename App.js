@@ -57,12 +57,12 @@ const App = () => {
 
   const [dueDate, setDueDate] = useState('');
   const dueDateChangeHandler = val => {
-    setDueDate(val);
+    setDueDate(new Date(val));
   };
 
   const [duration, setDuration] = useState('');
   const duartionChangeHandler = val => {
-    setDuration(val);
+    setDuration(Number(val));
   };
 
   const addNewItem = () => {
@@ -92,14 +92,25 @@ const App = () => {
   const editItem = item => {
     console.log(`EDIT ${item.title}`);
     setSelectedItem(item.key);
+    setTitle(item.title);
+    setDueDate(item.dueDate);
+    setDuration(item.duration);
     setEditModalOpen(true);
+  };
+
+  const updateItem = key => {
+    let item = todos.find(x => x.key === key);
+    item.title = title;
+    item.dueDate = new Date(dueDate);
+    item.duration = Number(duration);
+    setEditModalOpen(false);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Recurrence</Text>
 
-      <Modal visible={editModalOpen} animationType="slide">
+      <Modal visible={editModalOpen} animationType="fade">
         <SafeAreaView style={{flex: 1}}>
           <View
             style={{
@@ -109,24 +120,25 @@ const App = () => {
             }}>
             <TextInput
               style={styles.inputField}
-              placeholder="Title"
+              defaultValue={title}
               onChangeText={titleChangeHandler}
               returnKeyType="done"
             />
             <TextInput
               style={styles.inputField}
-              placeholder="Due Date"
+              // FIXME: Using a placeholder because onChangeText constantly tries to use part of the defaultValue as input and it results in an invalid Date. We can try to add JIT input validation in the onChangeText handler, or we can just use the placeholder for Edit until we have a date picker.
+              placeholder={new Date(dueDate).toDateString()}
               onChangeText={dueDateChangeHandler}
               returnKeyType="done"
             />
             <TextInput
               style={styles.inputField}
-              placeholder="Duration"
+              defaultValue={`${duration}`}
               onChangeText={duartionChangeHandler}
               returnKeyType="done"
             />
             <View style={{marginTop: 20}}>
-              <Button title="Save" onPress={addNewItem} />
+              <Button title="Save" onPress={() => updateItem(selectedItem)} />
               <Button title="Cancel" onPress={() => setEditModalOpen(false)} />
               <Button
                 title="Delete"

@@ -34,7 +34,7 @@ export default function TodoListItem({item, updateItem, editItem}) {
         />
         <View style={styles.dateLine}>
           <Text style={styles.daysRemaining}>
-            {item.daysRemaining} {daysRemainingMessage(item.daysRemaining)}
+            {daysRemainingMessage(item.daysRemaining)}
           </Text>
           <Text style={styles.dueDate}>{item.dueDate.toDateString()}</Text>
         </View>
@@ -44,8 +44,9 @@ export default function TodoListItem({item, updateItem, editItem}) {
 }
 
 const daysRemainingMessage = numDays => {
-  if (numDays === 1) return 'Day Remaining';
-  else return 'Days Remaining';
+  let daysString = numDays < 0 ? '0' : `${numDays}`;
+  let pluralString = numDays === 1 ? 'Day' : 'Days';
+  return `${daysString} ${pluralString} Remaining`;
 };
 
 const styles = StyleSheet.create({
