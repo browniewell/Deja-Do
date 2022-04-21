@@ -16,55 +16,66 @@ import TodoListItem from './components/todoListItem';
 import ActionButton from 'react-native-action-button';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const App = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [selectedItem, setSelectedItem] = useState('');
-
-  const [todos, setTodos] = useState([
-    new TodoItem(
-      'e6552993-ef34-46e6-8b20-1690e90d9fa1',
-      'First Item',
-      new Date(2022, 3, 15),
-      30,
-    ),
-    new TodoItem(
-      '570796d7-4269-43e0-87e0-7dc37eb45e44',
-      'Second Item',
-      new Date(2022, 3, 5),
-      10,
-    ),
-    new TodoItem(
-      '55c893cf-6fe6-4323-8d25-fe4c9f6ce88d',
-      'Third Item',
-      new Date(2022, 3, 9),
-      5,
-    ),
-    new TodoItem(
-      '557b2320-63e1-45a8-ad06-2e6dc70a0fb3',
-      'Fourth Item',
-      new Date(2022, 3, 2),
-      4,
-    ),
-  ]);
-
   const [title, setTitle] = useState('');
+  const [todos, setTodos] = useState([]);
+  const [dueDate, setDueDate] = useState('');
+  const [duration, setDuration] = useState('');
+
   const titleChangeHandler = val => {
     setTitle(val);
   };
 
-  const [dueDate, setDueDate] = useState('');
   const dueDateChangeHandler = val => {
     setDueDate(new Date(val));
   };
 
-  const [duration, setDuration] = useState('');
   const duartionChangeHandler = val => {
     setDuration(Number(val));
   };
 
+  const storeData = async value => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      console.log(jsonValue);
+      await AsyncStorage.setItem('todos', jsonValue);
+    } catch (e) {
+      // FIXME: Handle exceptions
+      // saving error
+    }
+  };
+
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('todos');
+
+      return jsonValue != null ? JSON.parse(jsonValue) : [];
+    } catch (e) {
+      // FIXME: Handle exceptions
+      // error reading value
+    }
+  };
+
+  // On the first render, pull the stored todo items. We only need to do this on first render, because we are saving changes to the list as we go and they already show up in the list when the changes are made.
+  useEffect(() => {
+    getData().then(value => {
+      console.log(value);
+      setTodos(value);
+    });
+  }, []);
+
+  // This will run any time an item is added or removed from the list
+  useEffect(() => {
+    storeData(todos);
+  }, [todos]);
+
+  // CREATE
   const addNewItem = () => {
     const uuid = uuidv4();
     setTodos(prevTodos => {
@@ -73,23 +84,21 @@ const App = () => {
         new TodoItem(uuid, title, new Date(dueDate), duration),
       ];
     });
+
     setCreateModalOpen(false);
   };
 
+  // DELETE
   const deleteItem = key => {
     setTodos(prevTodos => {
       return prevTodos.filter(todo => todo.key != key);
     });
+
     setEditModalOpen(false);
   };
 
-  const renewItem = item => {
-    console.log(`RENEW ${item.title}`);
-    item.dueDate = new Date().addDays(item.duration);
-    setRefresh(!refresh);
-  };
-
-  const editItem = item => {
+  // UPDATE
+  const startEdit = item => {
     console.log(`EDIT ${item.title}`);
     setSelectedItem(item.key);
     setTitle(item.title);
@@ -98,12 +107,32 @@ const App = () => {
     setEditModalOpen(true);
   };
 
-  const updateItem = key => {
+  const saveEdit = key => {
     let item = todos.find(x => x.key === key);
     item.title = title;
     item.dueDate = new Date(dueDate);
     item.duration = Number(duration);
+
+    // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
+    storeData(todos);
     setEditModalOpen(false);
+  };
+
+  const renewItem = item => {
+    console.log(`RENEW ${item.title}`);
+
+    // FIXME: This sets the due date to be not midnight
+    item.dueDate = new Date().addDays(item.duration);
+
+    // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
+    storeData(todos);
+    setRefresh(!refresh);
+  };
+
+  Date.prototype.addDays = function (days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
   };
 
   return (
@@ -138,7 +167,7 @@ const App = () => {
               returnKeyType="done"
             />
             <View style={{marginTop: 20}}>
-              <Button title="Save" onPress={() => updateItem(selectedItem)} />
+              <Button title="Save" onPress={() => saveEdit(selectedItem)} />
               <Button title="Cancel" onPress={() => setEditModalOpen(false)} />
               <Button
                 title="Delete"
@@ -192,8 +221,8 @@ const App = () => {
         renderItem={({item}) => (
           <TodoListItem
             item={item}
-            updateItem={renewItem}
-            editItem={editItem}
+            renewItem={renewItem}
+            editItem={startEdit}
           />
         )}
         extraData={refresh}
@@ -237,33 +266,4 @@ class TodoItem {
     this.dueDate = dueDate;
     this.daysRemaining = null;
   }
-
-  getProgress() {
-    function treatAsUTC(date) {
-      var result = new Date(date);
-      result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
-      return result;
-    }
-
-    function daysBetween(start, end) {
-      var millisecondsPerDay = 24 * 60 * 60 * 1000;
-      var daysBetween =
-        (treatAsUTC(end) - treatAsUTC(start)) / millisecondsPerDay;
-      return daysBetween;
-    }
-
-    // FIXME: If the due date is farther out than the current date plus the duration, the progress bar will be empty until that is no longer the case. This is only applicable on the first occurrence.
-    this.daysRemaining = daysBetween(Date.now(), this.dueDate);
-    var progress = (this.duration - this.daysRemaining) / this.duration;
-
-    this.daysRemaining = Math.ceil(this.daysRemaining);
-
-    return progress;
-  }
 }
-
-Date.prototype.addDays = function (days) {
-  var date = new Date(this.valueOf());
-  date.setDate(date.getDate() + days);
-  return date;
-};

@@ -12,14 +12,14 @@ import {
 import * as Progress from 'react-native-progress';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
-export default function TodoListItem({item, updateItem, editItem}) {
+export default function TodoListItem({item, renewItem, editItem}) {
   return (
     <View style={styles.item}>
       <MaterialIcon
         name="refresh"
         size={25}
         style={styles.refreshIcon}
-        onPress={() => updateItem(item)}
+        onPress={() => renewItem(item)}
       />
       <Pressable
         style={({pressed}) => [{opacity: pressed ? 0.5 : 1.0}, {flex: 1}]}
@@ -28,7 +28,7 @@ export default function TodoListItem({item, updateItem, editItem}) {
         }}>
         <Text style={styles.title}>{item.title}</Text>
         <Progress.Bar
-          progress={item.getProgress()}
+          progress={getProgress(item)}
           width={null}
           style={styles.progressBar}
         />
@@ -36,12 +36,37 @@ export default function TodoListItem({item, updateItem, editItem}) {
           <Text style={styles.daysRemaining}>
             {daysRemainingMessage(item.daysRemaining)}
           </Text>
-          <Text style={styles.dueDate}>{item.dueDate.toDateString()}</Text>
+          <Text style={styles.dueDate}>
+            {new Date(item.dueDate).toDateString()}
+          </Text>
         </View>
       </Pressable>
     </View>
   );
 }
+
+const getProgress = function (item) {
+  function treatAsUTC(date) {
+    var result = new Date(date);
+    result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
+    return result;
+  }
+
+  function daysBetween(start, end) {
+    var millisecondsPerDay = 24 * 60 * 60 * 1000;
+    var daysBetween =
+      (treatAsUTC(end) - treatAsUTC(start)) / millisecondsPerDay;
+    return daysBetween;
+  }
+
+  // FIXME: If the due date is farther out than the current date plus the duration, the progress bar will be empty until that is no longer the case. This is only applicable on the first occurrence.
+  item.daysRemaining = daysBetween(Date.now(), item.dueDate);
+  var progress = (item.duration - item.daysRemaining) / item.duration;
+
+  item.daysRemaining = Math.ceil(item.daysRemaining);
+
+  return progress;
+};
 
 const daysRemainingMessage = numDays => {
   let pluralString = Math.abs(numDays) === 1 ? 'Day' : 'Days';
