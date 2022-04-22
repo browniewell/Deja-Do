@@ -17,6 +17,7 @@ import ActionButton from 'react-native-action-button';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DatePicker from 'react-native-date-picker';
 
 const App = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -25,7 +26,7 @@ const App = () => {
   const [selectedItem, setSelectedItem] = useState('');
   const [title, setTitle] = useState('');
   const [todos, setTodos] = useState([]);
-  const [dueDate, setDueDate] = useState('');
+  const [dueDate, setDueDate] = useState(new Date());
   const [duration, setDuration] = useState('');
 
   const titleChangeHandler = val => {
@@ -147,24 +148,32 @@ const App = () => {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
+            <Text style={styles.fieldTitle}>Name</Text>
             <TextInput
               style={styles.inputField}
               defaultValue={title}
               onChangeText={titleChangeHandler}
               returnKeyType="done"
             />
-            <TextInput
+            {/* <TextInput
               style={styles.inputField}
               // FIXME: Using a placeholder because onChangeText constantly tries to use part of the defaultValue as input and it results in an invalid Date. We can try to add JIT input validation in the onChangeText handler, or we can just use the placeholder for Edit until we have a date picker.
               placeholder={new Date(dueDate).toDateString()}
               onChangeText={dueDateChangeHandler}
               returnKeyType="done"
-            />
+            /> */}
+            <Text style={styles.fieldTitle}>Duration (days)</Text>
             <TextInput
               style={styles.inputField}
               defaultValue={`${duration}`}
               onChangeText={duartionChangeHandler}
               returnKeyType="done"
+            />
+            <Text style={styles.fieldTitle}>Due Date</Text>
+            <DatePicker
+              date={new Date(dueDate)}
+              onDateChange={setDueDate}
+              mode={'date'}
             />
             <View style={{marginTop: 20}}>
               <Button title="Save" onPress={() => saveEdit(selectedItem)} />
@@ -187,23 +196,31 @@ const App = () => {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
+            <Text style={styles.fieldTitle}>Name</Text>
             <TextInput
               style={styles.inputField}
               placeholder="Title"
               onChangeText={titleChangeHandler}
               returnKeyType="done"
             />
-            <TextInput
+            {/* <TextInput
               style={styles.inputField}
               placeholder="Due Date"
               onChangeText={dueDateChangeHandler}
               returnKeyType="done"
-            />
+            /> */}
+            <Text style={styles.fieldTitle}>Duration (days)</Text>
             <TextInput
               style={styles.inputField}
               placeholder="Duration"
               onChangeText={duartionChangeHandler}
               returnKeyType="done"
+            />
+            <Text style={styles.fieldTitle}>Due Date</Text>
+            <DatePicker
+              date={new Date(dueDate)}
+              onDateChange={setDueDate}
+              mode={'date'}
             />
             <View style={{marginTop: 20}}>
               <Button title="Add" onPress={addNewItem} />
@@ -253,6 +270,10 @@ const styles = StyleSheet.create({
   },
   inputField: {
     marginVertical: 10,
+  },
+  fieldTitle: {
+    fontWeight: 'bold',
+    fontSize: 18,
   },
 });
 
