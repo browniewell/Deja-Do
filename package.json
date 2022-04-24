@@ -14,6 +14,7 @@
     "react": "17.0.2",
     "react-native": "0.67.4",
     "react-native-action-button": "^2.8.5",
+    "react-native-date-picker": "^4.2.1",
     "react-native-get-random-values": "^1.7.2",
     "react-native-progress": "^5.0.0",
     "react-native-vector-icons": "^9.1.0",
