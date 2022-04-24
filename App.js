@@ -160,6 +160,7 @@ const App = () => {
               style={styles.inputField}
               defaultValue={`${duration}`}
               onChangeText={duartionChangeHandler}
+              keyboardType="number-pad"
               returnKeyType="done"
             />
             <Text style={styles.fieldTitle}>Due Date</Text>
