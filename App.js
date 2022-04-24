@@ -155,13 +155,6 @@ const App = () => {
               onChangeText={titleChangeHandler}
               returnKeyType="done"
             />
-            {/* <TextInput
-              style={styles.inputField}
-              // FIXME: Using a placeholder because onChangeText constantly tries to use part of the defaultValue as input and it results in an invalid Date. We can try to add JIT input validation in the onChangeText handler, or we can just use the placeholder for Edit until we have a date picker.
-              placeholder={new Date(dueDate).toDateString()}
-              onChangeText={dueDateChangeHandler}
-              returnKeyType="done"
-            /> */}
             <Text style={styles.fieldTitle}>Duration (days)</Text>
             <TextInput
               style={styles.inputField}
@@ -172,7 +165,7 @@ const App = () => {
             <Text style={styles.fieldTitle}>Due Date</Text>
             <DatePicker
               date={new Date(dueDate)}
-              onDateChange={setDueDate}
+              onDateChange={dueDateChangeHandler}
               mode={'date'}
             />
             <View style={{marginTop: 20}}>
@@ -203,15 +196,10 @@ const App = () => {
               onChangeText={titleChangeHandler}
               returnKeyType="done"
             />
-            {/* <TextInput
-              style={styles.inputField}
-              placeholder="Due Date"
-              onChangeText={dueDateChangeHandler}
-              returnKeyType="done"
-            /> */}
             <Text style={styles.fieldTitle}>Duration (days)</Text>
             <TextInput
               style={styles.inputField}
+              keyboardType="number-pad"
               placeholder="Duration"
               onChangeText={duartionChangeHandler}
               returnKeyType="done"
@@ -219,14 +207,17 @@ const App = () => {
             <Text style={styles.fieldTitle}>Due Date</Text>
             <DatePicker
               date={new Date(dueDate)}
-              onDateChange={setDueDate}
+              onDateChange={dueDateChangeHandler}
               mode={'date'}
             />
             <View style={{marginTop: 20}}>
               <Button title="Add" onPress={addNewItem} />
               <Button
                 title="Cancel"
-                onPress={() => setCreateModalOpen(false)}
+                onPress={() => {
+                  setDueDate(new Date());
+                  setCreateModalOpen(false);
+                }}
               />
             </View>
           </View>
@@ -247,7 +238,10 @@ const App = () => {
 
       <ActionButton
         buttonColor="rgba(231,76,60,1)"
-        onPress={() => setCreateModalOpen(true)}
+        onPress={() => {
+          setDueDate(new Date());
+          setCreateModalOpen(true);
+        }}
       />
     </SafeAreaView>
   );
