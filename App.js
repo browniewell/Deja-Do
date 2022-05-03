@@ -138,7 +138,7 @@ const App = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Recurrence</Text>
+      <Text style={styles.header}>Deja Do</Text>
 
       <Modal visible={editModalOpen} animationType="fade">
         <SafeAreaView style={{flex: 1}}>

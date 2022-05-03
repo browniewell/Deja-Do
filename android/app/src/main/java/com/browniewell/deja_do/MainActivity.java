@@ -1,4 +1,4 @@
-package com.recurrence;
+package com.browniewell.deja_do;
 
 import com.facebook.react.ReactActivity;
 
@@ -10,6 +10,6 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "Recurrence";
+    return "DejaDo";
   }
 }
