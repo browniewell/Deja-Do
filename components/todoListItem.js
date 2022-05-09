@@ -72,7 +72,7 @@ const getProgress = function (item) {
 const getProgressBarColor = function (item) {
   let progress = getProgress(item);
   console.log(`Progress: ${progress}`);
-  if (progress < 0.9 && progress >= 0.66) {
+  if (progress < 1 && progress >= 0.66) {
     return 'rgba(255, 204, 0, 1)';
   } else if (progress >= 1) {
     return 'rgba(255, 59, 48, 1)';
