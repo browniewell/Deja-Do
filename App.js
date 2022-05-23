@@ -82,6 +82,11 @@ const App = () => {
 
   const storeData = async value => {
     try {
+      // let temp = [...value].sort((itemA, itemB) => {
+      //   console.log('Sort logic');
+      //   console.log(itemA.daysRemaining - itemB.daysRemaining);
+      //   return itemA.daysRemaining - itemB.daysRemaining;
+      // });
       const jsonValue = JSON.stringify(value);
       console.log(jsonValue);
       await AsyncStorage.setItem('todos', jsonValue);
@@ -112,8 +117,16 @@ const App = () => {
 
   // This will run any time an item is added or removed from the list
   useEffect(() => {
+    console.log('UseEffect update');
     storeData(todos);
   }, [todos]);
+
+  const sortTodos = prevTodos => {
+    let temp = [...prevTodos];
+    return temp.sort((itemA, itemB) => {
+      itemA.daysRemaining - itemB.daysRemaining;
+    });
+  };
 
   // CREATE
   const addNewItem = () => {
@@ -153,6 +166,8 @@ const App = () => {
     item.dueDate = new Date(dueDate);
     item.duration = Number(duration);
 
+    setTodos(sortTodos(todos));
+
     // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
     storeData(todos);
     setEditModalOpen(false);
@@ -166,7 +181,7 @@ const App = () => {
 
     // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
     storeData(todos);
-    setRefresh(!refresh);
+    setRefresh(!refresh); // FIXME: can we remove this?
   };
 
   Date.prototype.addDays = function (days) {
