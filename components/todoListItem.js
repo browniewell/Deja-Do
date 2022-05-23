@@ -70,7 +70,7 @@ const getProgress = function (item) {
 };
 
 const getProgressBarColor = function (item) {
-  console.log(`Days Remaining: ${item.daysRemaining}`);
+  // console.log(`Days Remaining: ${item.daysRemaining}`);
   if (item.daysRemaining <= 2 && item.daysRemaining > 0) {
     return 'rgba(255, 204, 0, 1)';
   } else if (item.daysRemaining <= 0) {
