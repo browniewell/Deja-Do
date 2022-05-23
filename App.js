@@ -83,7 +83,6 @@ const App = () => {
   const storeData = async value => {
     try {
       const jsonValue = JSON.stringify(value);
-      console.log(jsonValue);
       await AsyncStorage.setItem('todos', jsonValue);
     } catch (e) {
       // FIXME: Handle exceptions
@@ -112,17 +111,26 @@ const App = () => {
 
   // This will run any time an item is added or removed from the list
   useEffect(() => {
+    console.log('UseEffect update');
     storeData(todos);
   }, [todos]);
+
+  const sortTodos = oldTodos => {
+    let temp = [...oldTodos];
+    return temp.sort((itemA, itemB) => {
+      return new Date(itemA.dueDate) - new Date(itemB.dueDate);
+    });
+  };
 
   // CREATE
   const addNewItem = () => {
     const uuid = uuidv4();
     setTodos(prevTodos => {
-      return [
+      let temp = [
         ...prevTodos,
         new TodoItem(uuid, title, new Date(dueDate), duration),
       ];
+      return sortTodos(temp);
     });
 
     setCreateModalOpen(false);
@@ -153,7 +161,8 @@ const App = () => {
     item.dueDate = new Date(dueDate);
     item.duration = Number(duration);
 
-    // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
+    // Since this function changes members of the object, it will not trigger the useEffect hook and we must manually store the updated object
+    setTodos(sortTodos(todos));
     storeData(todos);
     setEditModalOpen(false);
   };
@@ -165,8 +174,8 @@ const App = () => {
     item.dueDate = new Date().addDays(item.duration);
 
     // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
+    setTodos(sortTodos(todos));
     storeData(todos);
-    setRefresh(!refresh);
   };
 
   Date.prototype.addDays = function (days) {
