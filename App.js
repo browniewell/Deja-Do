@@ -29,7 +29,7 @@ const App = () => {
   const [title, setTitle] = useState('');
   const [todos, setTodos] = useState([]);
   const [dueDate, setDueDate] = useState(new Date());
-  const [duration, setDuration] = useState('');
+  const [interval, setInterval] = useState('');
 
   // Refresh stuff
   const appState = useRef(AppState.currentState);
@@ -77,7 +77,7 @@ const App = () => {
   };
 
   const duartionChangeHandler = val => {
-    setDuration(Number(val));
+    setInterval(Number(val));
   };
 
   const storeData = async value => {
@@ -128,7 +128,7 @@ const App = () => {
     setTodos(prevTodos => {
       let temp = [
         ...prevTodos,
-        new TodoItem(uuid, title, new Date(dueDate), duration),
+        new TodoItem(uuid, title, new Date(dueDate), interval),
       ];
       return sortTodos(temp);
     });
@@ -151,7 +151,7 @@ const App = () => {
     setSelectedItem(item.key);
     setTitle(item.title);
     setDueDate(item.dueDate);
-    setDuration(item.duration);
+    setInterval(item.interval);
     setEditModalOpen(true);
   };
 
@@ -159,7 +159,7 @@ const App = () => {
     let item = todos.find(x => x.key === key);
     item.title = title;
     item.dueDate = new Date(dueDate);
-    item.duration = Number(duration);
+    item.interval = Number(interval);
 
     // Since this function changes members of the object, it will not trigger the useEffect hook and we must manually store the updated object
     setTodos(sortTodos(todos));
@@ -171,7 +171,7 @@ const App = () => {
     console.log(`RENEW ${item.title}`);
 
     // FIXME: This sets the due date to be not midnight
-    item.dueDate = new Date().addDays(item.duration);
+    item.dueDate = new Date().addDays(item.interval);
 
     // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
     setTodos(sortTodos(todos));
@@ -204,10 +204,10 @@ const App = () => {
               onChangeText={titleChangeHandler}
               returnKeyType="done"
             />
-            <Text style={styles.fieldTitle}>Duration (days)</Text>
+            <Text style={styles.fieldTitle}>Interval (days)</Text>
             <TextInput
               style={styles.inputField}
-              defaultValue={`${duration}`}
+              defaultValue={`${interval}`}
               onChangeText={duartionChangeHandler}
               keyboardType="number-pad"
               returnKeyType="done"
@@ -246,11 +246,11 @@ const App = () => {
               onChangeText={titleChangeHandler}
               returnKeyType="done"
             />
-            <Text style={styles.fieldTitle}>Duration (days)</Text>
+            <Text style={styles.fieldTitle}>Interval (days)</Text>
             <TextInput
               style={styles.inputField}
               keyboardType="number-pad"
-              placeholder="Duration"
+              placeholder="Interval"
               onChangeText={duartionChangeHandler}
               returnKeyType="done"
             />
@@ -326,10 +326,10 @@ const styles = StyleSheet.create({
 export default App;
 
 class TodoItem {
-  constructor(key, title, dueDate, duration) {
+  constructor(key, title, dueDate, interval) {
     this.key = key;
     this.title = title;
-    this.duration = duration;
+    this.interval = interval;
     this.dueDate = dueDate;
     this.daysRemaining = null;
   }
