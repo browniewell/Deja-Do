@@ -70,11 +70,10 @@ const getProgress = function (item) {
 };
 
 const getProgressBarColor = function (item) {
-  let progress = getProgress(item);
-  console.log(`Progress: ${progress}`);
-  if (progress < 1 && progress >= 0.8) {
+  console.log(`Days Remaining: ${item.daysRemaining}`);
+  if (item.daysRemaining <= 2 && item.daysRemaining > 0) {
     return 'rgba(255, 204, 0, 1)';
-  } else if (progress >= 1) {
+  } else if (item.daysRemaining <= 0) {
     return 'rgba(255, 59, 48, 1)';
   } else {
     return 'rgba(0, 122, 255, 1)';
