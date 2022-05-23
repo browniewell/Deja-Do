@@ -60,9 +60,9 @@ const getProgress = function (item) {
     return daysBetween;
   }
 
-  // FIXME: If the due date is farther out than the current date plus the duration, the progress bar will be empty until that is no longer the case. This is only applicable on the first occurrence.
+  // FIXME: If the due date is farther out than the current date plus the interval, the progress bar will be empty until that is no longer the case. This is only applicable on the first occurrence.
   item.daysRemaining = daysBetween(Date.now(), item.dueDate);
-  var progress = (item.duration - item.daysRemaining) / item.duration;
+  var progress = (item.interval - item.daysRemaining) / item.interval;
 
   item.daysRemaining = Math.ceil(item.daysRemaining);
 
