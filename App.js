@@ -88,7 +88,6 @@ const App = () => {
       //   return itemA.daysRemaining - itemB.daysRemaining;
       // });
       const jsonValue = JSON.stringify(value);
-      console.log(jsonValue);
       await AsyncStorage.setItem('todos', jsonValue);
     } catch (e) {
       // FIXME: Handle exceptions
@@ -121,10 +120,10 @@ const App = () => {
     storeData(todos);
   }, [todos]);
 
-  const sortTodos = prevTodos => {
-    let temp = [...prevTodos];
+  const sortTodos = oldTodos => {
+    let temp = [...oldTodos];
     return temp.sort((itemA, itemB) => {
-      itemA.daysRemaining - itemB.daysRemaining;
+      return new Date(itemA.dueDate) - new Date(itemB.dueDate);
     });
   };
 
@@ -132,10 +131,11 @@ const App = () => {
   const addNewItem = () => {
     const uuid = uuidv4();
     setTodos(prevTodos => {
-      return [
+      let temp = [
         ...prevTodos,
         new TodoItem(uuid, title, new Date(dueDate), duration),
       ];
+      return sortTodos(temp);
     });
 
     setCreateModalOpen(false);
@@ -166,9 +166,8 @@ const App = () => {
     item.dueDate = new Date(dueDate);
     item.duration = Number(duration);
 
+    // Since this function changes members of the object, it will not trigger the useEffect hook and we must manually store the updated object
     setTodos(sortTodos(todos));
-
-    // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
     storeData(todos);
     setEditModalOpen(false);
   };
@@ -180,8 +179,8 @@ const App = () => {
     item.dueDate = new Date().addDays(item.duration);
 
     // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
+    setTodos(sortTodos(todos));
     storeData(todos);
-    setRefresh(!refresh); // FIXME: can we remove this?
   };
 
   Date.prototype.addDays = function (days) {
