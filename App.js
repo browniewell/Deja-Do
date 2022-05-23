@@ -82,11 +82,6 @@ const App = () => {
 
   const storeData = async value => {
     try {
-      // let temp = [...value].sort((itemA, itemB) => {
-      //   console.log('Sort logic');
-      //   console.log(itemA.daysRemaining - itemB.daysRemaining);
-      //   return itemA.daysRemaining - itemB.daysRemaining;
-      // });
       const jsonValue = JSON.stringify(value);
       await AsyncStorage.setItem('todos', jsonValue);
     } catch (e) {
