@@ -138,6 +138,7 @@ const App = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <Text style={styles.header}>Deja Do</Text>
 
       <Modal visible={editModalOpen} animationType="fade">
