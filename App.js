@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import {
+  AppState,
   Button,
   FlatList,
   Modal,
@@ -28,6 +29,30 @@ const App = () => {
   const [todos, setTodos] = useState([]);
   const [dueDate, setDueDate] = useState(new Date());
   const [duration, setDuration] = useState('');
+
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+
+  // Refresh when the app becomes active from being in the background
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('App has come to the foreground!');
+        setRefresh(!refresh);
+      }
+
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      console.log('AppState', appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   const titleChangeHandler = val => {
     setTitle(val);
