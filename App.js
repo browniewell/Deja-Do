@@ -5,6 +5,7 @@ import {
   FlatList,
   Modal,
   Pressable,
+  RefreshControl,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -30,8 +31,21 @@ const App = () => {
   const [dueDate, setDueDate] = useState(new Date());
   const [duration, setDuration] = useState('');
 
+  // Refresh stuff
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const wait = timeout => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  };
+
+  const onRefresh = React.useCallback(() => {
+    console.log('Refreshing');
+    setRefreshing(true);
+    setRefresh(!refresh);
+    wait(1000).then(() => setRefreshing(false));
+  }, []);
 
   // Refresh when the app becomes active from being in the background
   useEffect(() => {
@@ -249,7 +263,6 @@ const App = () => {
           </View>
         </SafeAreaView>
       </Modal>
-
       <FlatList
         data={todos}
         renderItem={({item}) => (
@@ -260,10 +273,13 @@ const App = () => {
           />
         )}
         extraData={refresh}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
 
       <ActionButton
-        buttonColor="rgba(231,76,60,1)"
+        buttonColor="rgba(0, 122, 255, 1)"
         onPress={() => {
           setDueDate(new Date());
           setCreateModalOpen(true);
