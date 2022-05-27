@@ -1,5 +1,6 @@
 import React, {useRef, useEffect, useState} from 'react';
 import {
+  Alert,
   AppState,
   Button,
   FlatList,
@@ -193,6 +194,24 @@ const App = () => {
     return date;
   };
 
+  const confirmDelete = () => {
+    Alert.alert(
+      'Confirm Delete',
+      `Are you sure you want to delete ${selectedItem.title}?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: () => deleteItem(selectedItem),
+          style: 'destructive',
+        },
+      ],
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -233,7 +252,7 @@ const App = () => {
               <Button
                 title="Delete"
                 color="red"
-                onPress={() => deleteItem(selectedItem)}
+                onPress={() => confirmDelete()}
               />
             </View>
           </View>
