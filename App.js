@@ -128,7 +128,12 @@ const App = () => {
     setTodos(prevTodos => {
       let temp = [
         ...prevTodos,
-        new TodoItem(uuid, title, new Date(dueDate), interval),
+        new TodoItem(
+          uuid,
+          title,
+          new Date(dueDate).setTimeToAlmostMidnight(),
+          interval,
+        ),
       ];
       return sortTodos(temp);
     });
@@ -158,7 +163,7 @@ const App = () => {
   const saveEdit = key => {
     let item = todos.find(x => x.key === key);
     item.title = title;
-    item.dueDate = new Date(dueDate);
+    item.dueDate = new Date(dueDate).setTimeToAlmostMidnight();
     item.interval = Number(interval);
 
     // Since this function changes members of the object, it will not trigger the useEffect hook and we must manually store the updated object
@@ -169,9 +174,7 @@ const App = () => {
 
   const renewItem = item => {
     console.log(`RENEW ${item.title}`);
-
-    // FIXME: This sets the due date to be not midnight
-    item.dueDate = new Date().addDays(item.interval);
+    item.dueDate = new Date().addDays(item.interval).setTimeToAlmostMidnight();
 
     // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
     setTodos(sortTodos(todos));
@@ -181,6 +184,12 @@ const App = () => {
   Date.prototype.addDays = function (days) {
     var date = new Date(this.valueOf());
     date.setDate(date.getDate() + days);
+    return date;
+  };
+
+  Date.prototype.setTimeToAlmostMidnight = function () {
+    var date = new Date(this.valueOf());
+    date.setHours(23, 59, 59);
     return date;
   };
 

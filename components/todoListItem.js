@@ -64,7 +64,7 @@ const getProgress = function (item) {
   item.daysRemaining = daysBetween(Date.now(), item.dueDate);
   var progress = (item.interval - item.daysRemaining) / item.interval;
 
-  item.daysRemaining = Math.ceil(item.daysRemaining);
+  item.daysRemaining = Math.floor(item.daysRemaining);
 
   return progress;
 };
@@ -74,7 +74,10 @@ const getProgressBarColor = function (item) {
   if (item.daysRemaining <= 2 && item.daysRemaining > 0) {
     // Yellow
     return 'rgba(255, 204, 0, 1)';
-  } else if (item.daysRemaining <= 0) {
+  } else if (item.daysRemaining == 0) {
+    // Green
+    return 'rgba(76, 217, 100, 1)';
+  } else if (item.daysRemaining < 0) {
     // Red
     return 'rgba(255, 59, 48, 1)';
   } else {
