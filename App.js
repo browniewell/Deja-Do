@@ -316,10 +316,11 @@ const styles = StyleSheet.create({
   },
   inputField: {
     marginVertical: 10,
+    fontSize: 20,
   },
   fieldTitle: {
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 24,
   },
 });
 
