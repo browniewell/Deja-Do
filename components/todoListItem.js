@@ -16,7 +16,7 @@ export default function TodoListItem({item, renewItem, editItem}) {
   return (
     <View style={styles.item}>
       <MaterialIcon
-        name="refresh"
+        name={item.interval == 0 ? 'done' : 'refresh'}
         size={25}
         style={styles.refreshIcon}
         onPress={() => renewItem(item)}

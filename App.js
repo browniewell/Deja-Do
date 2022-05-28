@@ -174,12 +174,19 @@ const App = () => {
   };
 
   const renewItem = item => {
-    console.log(`RENEW ${item.title}`);
-    item.dueDate = new Date().addDays(item.interval).setTimeToAlmostMidnight();
+    if (item.interval == 0) {
+      console.log(`COMPLETE ${item.title}`);
+      deleteItem(item.key);
+    } else {
+      console.log(`RENEW ${item.title}`);
+      item.dueDate = new Date()
+        .addDays(item.interval)
+        .setTimeToAlmostMidnight();
 
-    // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
-    setTodos(sortTodos(todos));
-    storeData(todos);
+      // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
+      setTodos(sortTodos(todos));
+      storeData(todos);
+    }
   };
 
   Date.prototype.addDays = function (days) {
