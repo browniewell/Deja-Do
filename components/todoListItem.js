@@ -16,7 +16,7 @@ export default function TodoListItem({item, renewItem, editItem}) {
   return (
     <View style={styles.item}>
       <MaterialIcon
-        name="refresh"
+        name={handleRecurringUndefined(item)}
         size={25}
         style={styles.refreshIcon}
         onPress={() => renewItem(item)}
@@ -46,6 +46,12 @@ export default function TodoListItem({item, renewItem, editItem}) {
   );
 }
 
+const handleRecurringUndefined = function (item) {
+  // Default to true in order to handle legacy items
+  var recurring = item.isRecurring ?? true;
+  return recurring ? 'refresh' : 'done';
+};
+
 const getProgress = function (item) {
   function treatAsUTC(date) {
     var result = new Date(date);
@@ -64,7 +70,8 @@ const getProgress = function (item) {
   item.daysRemaining = daysBetween(Date.now(), item.dueDate);
   var progress = (item.interval - item.daysRemaining) / item.interval;
 
-  item.daysRemaining = Math.floor(item.daysRemaining);
+  // Add 1 to days remaining to account for the midnight due date
+  item.daysRemaining = Math.floor(item.daysRemaining) + 1;
 
   return progress;
 };
