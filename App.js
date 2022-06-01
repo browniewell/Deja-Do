@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
@@ -31,6 +32,9 @@ const App = () => {
   const [todos, setTodos] = useState([]);
   const [dueDate, setDueDate] = useState(new Date());
   const [interval, setInterval] = useState('');
+
+  const [isRecurring, setIsRecurring] = useState(true);
+  const toggleRecurring = () => setIsRecurring(previousState => !previousState);
 
   // Refresh stuff
   const appState = useRef(AppState.currentState);
@@ -77,7 +81,7 @@ const App = () => {
     setDueDate(new Date(val));
   };
 
-  const duartionChangeHandler = val => {
+  const intervalChangeHandler = val => {
     setInterval(Number(val));
   };
 
@@ -126,14 +130,23 @@ const App = () => {
   // CREATE
   const addNewItem = () => {
     const uuid = uuidv4();
+    var adjustedDueDate = new Date(dueDate).setTimeToMidnight();
     setTodos(prevTodos => {
       let temp = [
         ...prevTodos,
         new TodoItem(
           uuid,
           title,
-          new Date(dueDate).setTimeToAlmostMidnight(),
-          interval,
+          adjustedDueDate,
+          isRecurring
+            ? interval
+            : Math.ceil(
+                daysBetween(
+                  new Date(Date.now()).setTimeToMidnight(),
+                  adjustedDueDate,
+                ),
+              ),
+          isRecurring,
         ),
       ];
       return sortTodos(temp);
@@ -141,6 +154,20 @@ const App = () => {
 
     setCreateModalOpen(false);
   };
+
+  // FIXME: Move this to a shared file, because it also exists in todoListItem.js
+  function daysBetween(start, end) {
+    function treatAsUTC(date) {
+      var result = new Date(date);
+      result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
+      return result;
+    }
+
+    var millisecondsPerDay = 24 * 60 * 60 * 1000;
+    var daysBetween =
+      (treatAsUTC(end) - treatAsUTC(start)) / millisecondsPerDay;
+    return daysBetween;
+  }
 
   // DELETE
   const deleteItem = key => {
@@ -158,14 +185,16 @@ const App = () => {
     setTitle(item.title);
     setDueDate(item.dueDate);
     setInterval(item.interval);
+    setIsRecurring(item.isRecurring);
     setEditModalOpen(true);
   };
 
   const saveEdit = key => {
     let item = todos.find(x => x.key === key);
     item.title = title;
-    item.dueDate = new Date(dueDate).setTimeToAlmostMidnight();
+    item.dueDate = new Date(dueDate).setTimeToMidnight();
     item.interval = Number(interval);
+    item.isRecurring = isRecurring;
 
     // Since this function changes members of the object, it will not trigger the useEffect hook and we must manually store the updated object
     setTodos(sortTodos(todos));
@@ -174,14 +203,12 @@ const App = () => {
   };
 
   const renewItem = item => {
-    if (item.interval == 0) {
+    if (!item.isRecurring) {
       console.log(`COMPLETE ${item.title}`);
       deleteItem(item.key);
     } else {
       console.log(`RENEW ${item.title}`);
-      item.dueDate = new Date()
-        .addDays(item.interval)
-        .setTimeToAlmostMidnight();
+      item.dueDate = new Date().addDays(item.interval).setTimeToMidnight();
 
       // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
       setTodos(sortTodos(todos));
@@ -195,9 +222,9 @@ const App = () => {
     return date;
   };
 
-  Date.prototype.setTimeToAlmostMidnight = function () {
+  Date.prototype.setTimeToMidnight = function () {
     var date = new Date(this.valueOf());
-    date.setHours(23, 59, 59);
+    date.setHours(0, 0, 0);
     return date;
   };
 
@@ -235,18 +262,38 @@ const App = () => {
             <Text style={styles.fieldTitle}>Name</Text>
             <TextInput
               style={styles.inputField}
-              defaultValue={title}
               onChangeText={titleChangeHandler}
               returnKeyType="done"
+              value={title}
             />
-            <Text style={styles.fieldTitle}>Interval (days)</Text>
-            <TextInput
-              style={styles.inputField}
-              defaultValue={`${interval}`}
-              onChangeText={duartionChangeHandler}
-              keyboardType="number-pad"
-              returnKeyType="done"
-            />
+            <View style={{flexDirection: 'row'}}>
+              <Text
+                style={{
+                  marginTop: 5,
+                  marginRight: 5,
+                  fontSize: 16,
+                  fontWeight: '500',
+                }}>
+                Recurring
+              </Text>
+              <Switch
+                value={isRecurring}
+                onValueChange={toggleRecurring}
+                style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}
+              />
+            </View>
+            {isRecurring && (
+              <Text style={styles.fieldTitle}>Interval (days)</Text>
+            )}
+            {isRecurring && (
+              <TextInput
+                style={styles.inputField}
+                onChangeText={intervalChangeHandler}
+                keyboardType="number-pad"
+                returnKeyType="done"
+                value={`${interval}`}
+              />
+            )}
             <Text style={styles.fieldTitle}>Due Date</Text>
             <DatePicker
               date={new Date(dueDate)}
@@ -281,14 +328,34 @@ const App = () => {
               onChangeText={titleChangeHandler}
               returnKeyType="done"
             />
-            <Text style={styles.fieldTitle}>Interval (days)</Text>
-            <TextInput
-              style={styles.inputField}
-              keyboardType="number-pad"
-              placeholder="Interval"
-              onChangeText={duartionChangeHandler}
-              returnKeyType="done"
-            />
+            <View style={{flexDirection: 'row'}}>
+              <Text
+                style={{
+                  marginTop: 5,
+                  marginRight: 5,
+                  fontSize: 16,
+                  fontWeight: '500',
+                }}>
+                Recurring
+              </Text>
+              <Switch
+                value={isRecurring}
+                onValueChange={toggleRecurring}
+                style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}
+              />
+            </View>
+            {isRecurring && (
+              <Text style={styles.fieldTitle}>Interval (days)</Text>
+            )}
+            {isRecurring && (
+              <TextInput
+                style={styles.inputField}
+                placeholder="Interval"
+                onChangeText={intervalChangeHandler}
+                keyboardType="number-pad"
+                returnKeyType="done"
+              />
+            )}
             <Text style={styles.fieldTitle}>Due Date</Text>
             <DatePicker
               date={new Date(dueDate)}
@@ -327,6 +394,7 @@ const App = () => {
         buttonColor="rgba(0, 122, 255, 1)"
         onPress={() => {
           setDueDate(new Date());
+          setIsRecurring(true);
           setCreateModalOpen(true);
         }}
       />
@@ -362,11 +430,12 @@ const styles = StyleSheet.create({
 export default App;
 
 class TodoItem {
-  constructor(key, title, dueDate, interval) {
+  constructor(key, title, dueDate, interval, isRecurring) {
     this.key = key;
     this.title = title;
     this.interval = interval;
     this.dueDate = dueDate;
     this.daysRemaining = null;
+    this.isRecurring = isRecurring;
   }
 }
