@@ -31,7 +31,7 @@ const App = () => {
   const [title, setTitle] = useState('');
   const [todos, setTodos] = useState([]);
   const [dueDate, setDueDate] = useState(new Date());
-  const [interval, setInterval] = useState('');
+  const [interval, setInterval] = useState(1);
 
   const [isRecurring, setIsRecurring] = useState(true);
   const toggleRecurring = () => setIsRecurring(previousState => !previousState);
