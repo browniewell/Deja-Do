@@ -193,7 +193,17 @@ const App = () => {
     let item = todos.find(x => x.key === key);
     item.title = title;
     item.dueDate = new Date(dueDate).setTimeToMidnight();
-    item.interval = Number(interval);
+    var adjustedDueDate = new Date(dueDate).setTimeToMidnight();
+    item.interval = Number(
+      isRecurring
+        ? interval
+        : Math.ceil(
+            daysBetween(
+              new Date(Date.now()).setTimeToMidnight(),
+              adjustedDueDate,
+            ),
+          ),
+    );
     item.isRecurring = isRecurring;
 
     // Since this function changes members of the object, it will not trigger the useEffect hook and we must manually store the updated object
