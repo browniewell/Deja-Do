@@ -27,7 +27,7 @@ const App = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const [selectedItem, setSelectedItem] = useState('');
+  const [selectedItemKey, setSelectedItemKey] = useState('');
   const [title, setTitle] = useState('');
   const [todos, setTodos] = useState([]);
   const [dueDate, setDueDate] = useState(new Date());
@@ -181,7 +181,7 @@ const App = () => {
   // UPDATE
   const startEdit = item => {
     console.log(`EDIT ${item.title}`);
-    setSelectedItem(item.key);
+    setSelectedItemKey(item.key);
     setTitle(item.title);
     setDueDate(item.dueDate);
     setInterval(item.interval);
@@ -238,10 +238,11 @@ const App = () => {
     return date;
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = key => {
+    let item = todos.find(x => x.key === key);
     Alert.alert(
       'Confirm Delete',
-      `Are you sure you want to delete ${selectedItem.title}?`,
+      `Are you sure you want to delete '${item.title}'?`,
       [
         {
           text: 'Cancel',
@@ -249,7 +250,7 @@ const App = () => {
         },
         {
           text: 'Delete',
-          onPress: () => deleteItem(selectedItem),
+          onPress: () => deleteItem(selectedItemKey),
           style: 'destructive',
         },
       ],
@@ -311,12 +312,12 @@ const App = () => {
               mode={'date'}
             />
             <View style={{marginTop: 20}}>
-              <Button title="Save" onPress={() => saveEdit(selectedItem)} />
+              <Button title="Save" onPress={() => saveEdit(selectedItemKey)} />
               <Button title="Cancel" onPress={() => setEditModalOpen(false)} />
               <Button
                 title="Delete"
                 color="red"
-                onPress={() => confirmDelete()}
+                onPress={() => confirmDelete(selectedItemKey)}
               />
             </View>
           </View>
