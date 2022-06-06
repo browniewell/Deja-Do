@@ -69,11 +69,10 @@ const getProgress = function (item) {
   // FIXME: If the due date is farther out than the current date plus the interval, the progress bar will be empty until that is no longer the case. This is only applicable on the first occurrence.
   item.daysRemaining = daysBetween(Date.now(), item.dueDate);
   var progress;
-
-  // This can happen if the new item is due on the same day it's created, since the due time is midnight on that day. In these cases, set progress bar to full and days remaining to 0.
-  if (item.daysRemaining < 0) {
+  
+  // Covers the case where a single-use item was created/edited to have a due-date in the past (including the current day), which would result in a negative interval
+  if (item.interval <= 0) {
     progress = 1;
-    item.daysRemaining = 0;
   } else {
     progress = (item.interval - item.daysRemaining) / item.interval;
 
