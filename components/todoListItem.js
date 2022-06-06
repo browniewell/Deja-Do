@@ -70,16 +70,15 @@ const getProgress = function (item) {
   item.daysRemaining = daysBetween(Date.now(), item.dueDate);
   var progress;
 
-  // This can happen if the new item is due on the same day it's created, since the due time is midnight on that day. In these cases, set progress bar to full and days remaining to 0.
-  if (item.daysRemaining < 0) {
+  // Covers the case where a single-use item was created/edited to have a due-date in the past (including the current day), which would result in a negative interval
+  if (item.interval <= 0) {
     progress = 1;
-    item.daysRemaining = 0;
   } else {
     progress = (item.interval - item.daysRemaining) / item.interval;
-
-    // Add 1 to days remaining to account for the midnight due date
-    item.daysRemaining = Math.floor(item.daysRemaining) + 1;
   }
+
+  // Add 1 to days remaining to account for the midnight due date
+  item.daysRemaining = Math.floor(item.daysRemaining) + 1;
 
   return progress;
 };
