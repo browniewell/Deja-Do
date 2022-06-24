@@ -22,6 +22,7 @@ import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DatePicker from 'react-native-date-picker';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const App = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -51,6 +52,16 @@ const App = () => {
     setRefresh(!refresh);
     wait(1000).then(() => setRefreshing(false));
   }, []);
+
+  // Dropdown stuff
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownValue, setDropdownValue] = useState(null);
+  const [dropdownItems, setDropdownItems] = useState([
+    {label: 'Days', value: 'days'},
+    {label: 'Weeks', value: 'weeks'},
+    {label: 'Months', value: 'months'},
+    {label: 'Years', value: 'years'},
+  ]);
 
   // Refresh when the app becomes active from being in the background
   useEffect(() => {
@@ -293,9 +304,7 @@ const App = () => {
                 style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}
               />
             </View>
-            {isRecurring && (
-              <Text style={styles.fieldTitle}>Interval (days)</Text>
-            )}
+            {isRecurring && <Text style={styles.fieldTitle}>Interval</Text>}
             {isRecurring && (
               <TextInput
                 style={styles.inputField}
@@ -305,6 +314,16 @@ const App = () => {
                 value={`${interval}`}
               />
             )}
+            {/* {isRecurring && (
+              <DropDownPicker
+                open={dropdownOpen}
+                value={dropdownValue}
+                items={dropdownItems}
+                setOpen={setDropdownOpen}
+                setValue={setDropdownValue}
+                setItems={setDropdownItems}
+              />
+            )} */}
             <Text style={styles.fieldTitle}>Due Date</Text>
             <DatePicker
               date={new Date(dueDate)}
