@@ -33,6 +33,7 @@ const App = () => {
   const [todos, setTodos] = useState([]);
   const [dueDate, setDueDate] = useState(new Date());
   const [interval, setInterval] = useState(1);
+  const [intervalUnits, setIntervalUnits] = useState('days');
 
   const [isRecurring, setIsRecurring] = useState(true);
   const toggleRecurring = () => setIsRecurring(previousState => !previousState);
@@ -55,12 +56,10 @@ const App = () => {
 
   // Dropdown stuff
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [dropdownValue, setDropdownValue] = useState(null);
   const [dropdownItems, setDropdownItems] = useState([
     {label: 'Days', value: 'days'},
     {label: 'Weeks', value: 'weeks'},
     {label: 'Months', value: 'months'},
-    {label: 'Years', value: 'years'},
   ]);
 
   // Refresh when the app becomes active from being in the background
@@ -158,6 +157,7 @@ const App = () => {
                 ),
               ),
           isRecurring,
+          intervalUnits,
         ),
       ];
       return sortTodos(temp);
@@ -197,6 +197,7 @@ const App = () => {
     setDueDate(item.dueDate);
     setInterval(item.interval);
     setIsRecurring(item.isRecurring);
+    setIntervalUnits(item.intervalUnits);
     setEditModalOpen(true);
   };
 
@@ -205,6 +206,9 @@ const App = () => {
     item.title = title;
     item.dueDate = new Date(dueDate).setTimeToMidnight();
     var adjustedDueDate = new Date(dueDate).setTimeToMidnight();
+
+    // The second part of this ternary operation sets a dummy interval for a non-recurring item, so that
+    // the progress bar works properly
     item.interval = Number(
       isRecurring
         ? interval
@@ -216,6 +220,7 @@ const App = () => {
           ),
     );
     item.isRecurring = isRecurring;
+    item.intervalUnits = intervalUnits;
 
     // Since this function changes members of the object, it will not trigger the useEffect hook and we must manually store the updated object
     setTodos(sortTodos(todos));
@@ -229,7 +234,27 @@ const App = () => {
       deleteItem(item.key);
     } else {
       console.log(`RENEW ${item.title}`);
-      item.dueDate = new Date().addDays(item.interval).setTimeToMidnight();
+
+      // Days - Add number of days to current date
+      if (item.intervalUnits == 'days') {
+        item.dueDate = new Date().addDays(item.interval).setTimeToMidnight();
+      }
+
+      // Weeks - Add number of weeks to current date
+      else if (item.intervalUnits == 'weeks') {
+        item.dueDate = new Date()
+          .addDays(new Number(item.interval) * 7)
+          .setTimeToMidnight();
+      }
+
+      // Months - Set due date to current day of next month
+      else if ((item.intervalUnits = 'months')) {
+        item.dueDate = addMonths(new Date(), item.interval).setTimeToMidnight();
+      } else {
+        // Make Days the default to handle legacy items
+        console.log('LEGACY');
+        item.dueDate = new Date().addDays(item.interval).setTimeToMidnight();
+      }
 
       // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
       setTodos(sortTodos(todos));
@@ -242,6 +267,15 @@ const App = () => {
     date.setDate(date.getDate() + days);
     return date;
   };
+
+  function addMonths(date, months) {
+    var d = date.getDate();
+    date.setMonth(date.getMonth() + +months);
+    if (date.getDate() != d) {
+      date.setDate(0);
+    }
+    return date;
+  }
 
   Date.prototype.setTimeToMidnight = function () {
     var date = new Date(this.valueOf());
@@ -304,40 +338,66 @@ const App = () => {
                 style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}
               />
             </View>
-            {isRecurring && <Text style={styles.fieldTitle}>Interval</Text>}
             {isRecurring && (
-              <TextInput
-                style={styles.inputField}
-                onChangeText={intervalChangeHandler}
-                keyboardType="number-pad"
-                returnKeyType="done"
-                value={`${interval}`}
-              />
+              <View style={{alignItems: 'center'}}>
+                <Text style={styles.fieldTitle}>Interval</Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <TextInput
+                    style={styles.inputField}
+                    onChangeText={intervalChangeHandler}
+                    keyboardType="number-pad"
+                    returnKeyType="done"
+                    value={`${interval}`}
+                    clearTextOnFocus={true}
+                  />
+                  <DropDownPicker
+                    open={dropdownOpen}
+                    value={intervalUnits}
+                    items={dropdownItems}
+                    setOpen={setDropdownOpen}
+                    setValue={setIntervalUnits}
+                    setItems={setDropdownItems}
+                    containerStyle={{
+                      width: 120,
+                      marginVertical: 5,
+                      marginHorizontal: 20,
+                    }}
+                  />
+                </View>
+              </View>
             )}
-            {/* {isRecurring && (
-              <DropDownPicker
-                open={dropdownOpen}
-                value={dropdownValue}
-                items={dropdownItems}
-                setOpen={setDropdownOpen}
-                setValue={setDropdownValue}
-                setItems={setDropdownItems}
+            <View
+              style={{
+                // flex: 1,
+                // justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: -1,
+              }}>
+              <Text style={styles.fieldTitle}>Due Date</Text>
+              <DatePicker
+                date={new Date(dueDate)}
+                onDateChange={dueDateChangeHandler}
+                mode={'date'}
               />
-            )} */}
-            <Text style={styles.fieldTitle}>Due Date</Text>
-            <DatePicker
-              date={new Date(dueDate)}
-              onDateChange={dueDateChangeHandler}
-              mode={'date'}
-            />
-            <View style={{marginTop: 20}}>
-              <Button title="Save" onPress={() => saveEdit(selectedItemKey)} />
-              <Button title="Cancel" onPress={() => setEditModalOpen(false)} />
-              <Button
-                title="Delete"
-                color="red"
-                onPress={() => confirmDelete(selectedItemKey)}
-              />
+              <View style={{marginTop: 20}}>
+                <Button
+                  title="Save"
+                  onPress={() => saveEdit(selectedItemKey)}
+                />
+                <Button
+                  title="Cancel"
+                  onPress={() => setEditModalOpen(false)}
+                />
+                <Button
+                  title="Delete"
+                  color="red"
+                  onPress={() => confirmDelete(selectedItemKey)}
+                />
+              </View>
             </View>
           </View>
         </SafeAreaView>
@@ -375,32 +435,60 @@ const App = () => {
               />
             </View>
             {isRecurring && (
-              <Text style={styles.fieldTitle}>Interval (days)</Text>
+              <View style={{alignItems: 'center'}}>
+                <Text style={styles.fieldTitle}>Interval</Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <TextInput
+                    style={styles.inputField}
+                    onChangeText={intervalChangeHandler}
+                    keyboardType="number-pad"
+                    returnKeyType="done"
+                    value={`${interval}`}
+                    clearTextOnFocus={true}
+                  />
+                  <DropDownPicker
+                    open={dropdownOpen}
+                    value={intervalUnits}
+                    items={dropdownItems}
+                    setOpen={setDropdownOpen}
+                    setValue={setIntervalUnits}
+                    setItems={setDropdownItems}
+                    containerStyle={{
+                      width: 120,
+                      marginVertical: 5,
+                      marginHorizontal: 20,
+                    }}
+                  />
+                </View>
+              </View>
             )}
-            {isRecurring && (
-              <TextInput
-                style={styles.inputField}
-                placeholder="Interval"
-                onChangeText={intervalChangeHandler}
-                keyboardType="number-pad"
-                returnKeyType="done"
+            <View
+              style={{
+                // flex: 1,
+                // justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: -1,
+              }}>
+              <Text style={styles.fieldTitle}>Due Date</Text>
+              <DatePicker
+                date={new Date(dueDate)}
+                onDateChange={dueDateChangeHandler}
+                mode={'date'}
               />
-            )}
-            <Text style={styles.fieldTitle}>Due Date</Text>
-            <DatePicker
-              date={new Date(dueDate)}
-              onDateChange={dueDateChangeHandler}
-              mode={'date'}
-            />
-            <View style={{marginTop: 20}}>
-              <Button title="Add" onPress={addNewItem} />
-              <Button
-                title="Cancel"
-                onPress={() => {
-                  setDueDate(new Date());
-                  setCreateModalOpen(false);
-                }}
-              />
+              <View style={{marginTop: 20}}>
+                <Button title="Add" onPress={addNewItem} />
+                <Button
+                  title="Cancel"
+                  onPress={() => {
+                    setDueDate(new Date());
+                    setCreateModalOpen(false);
+                  }}
+                />
+              </View>
             </View>
           </View>
         </SafeAreaView>
@@ -425,6 +513,7 @@ const App = () => {
         onPress={() => {
           setDueDate(new Date());
           setIsRecurring(true);
+          setIntervalUnits('days');
           setCreateModalOpen(true);
         }}
       />
@@ -450,6 +539,7 @@ const styles = StyleSheet.create({
   inputField: {
     marginVertical: 10,
     fontSize: 20,
+    marginHorizontal: 20,
   },
   fieldTitle: {
     fontWeight: 'bold',
@@ -460,12 +550,13 @@ const styles = StyleSheet.create({
 export default App;
 
 class TodoItem {
-  constructor(key, title, dueDate, interval, isRecurring) {
+  constructor(key, title, dueDate, interval, isRecurring, intervalUnits) {
     this.key = key;
     this.title = title;
     this.interval = interval;
     this.dueDate = dueDate;
     this.daysRemaining = null;
     this.isRecurring = isRecurring;
+    this.intervalUnits = intervalUnits;
   }
 }

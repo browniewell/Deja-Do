@@ -16,7 +16,7 @@ export default function TodoListItem({item, renewItem, editItem}) {
   return (
     <View style={styles.item}>
       <MaterialIcon
-        name={handleRecurringUndefined(item)}
+        name={item.isRecurring ? 'refresh' : 'done'}
         size={25}
         style={styles.refreshIcon}
         onPress={() => renewItem(item)}
@@ -46,12 +46,6 @@ export default function TodoListItem({item, renewItem, editItem}) {
   );
 }
 
-const handleRecurringUndefined = function (item) {
-  // Default to true in order to handle legacy items
-  var recurring = item.isRecurring ?? true;
-  return recurring ? 'refresh' : 'done';
-};
-
 const getProgress = function (item) {
   function treatAsUTC(date) {
     var result = new Date(date);
@@ -66,15 +60,28 @@ const getProgress = function (item) {
     return daysBetween;
   }
 
-  // FIXME: If the due date is farther out than the current date plus the interval, the progress bar will be empty until that is no longer the case. This is only applicable on the first occurrence.
+  // FIXME: If the due date is farther out than the current date plus the interval, the
+  // progress bar will be empty until that is no longer the case. This is only applicable on the first occurrence.
   item.daysRemaining = daysBetween(Date.now(), item.dueDate);
   var progress;
 
-  // Covers the case where a single-use item was created/edited to have a due-date in the past (including the current day), which would result in a negative interval
+  // Covers the case where a single-use item was created/edited to have a due-date in the past
+  // (including the current day), which would result in a negative interval
   if (item.interval <= 0) {
     progress = 1;
   } else {
-    progress = (item.interval - item.daysRemaining) / item.interval;
+    if (item.intervalUnits == 'days') {
+      progress = (item.interval - item.daysRemaining) / item.interval;
+    } else if (item.intervalUnits == 'weeks') {
+      progress = (item.interval * 7 - item.daysRemaining) / (item.interval * 7);
+    } else if (item.intervalUnits == 'months') {
+      // Not all months are 30 days, but we're doing this just to make things easier.
+      // It shouldn't make a big difference as far as the progress bar is concerned (1/30 of the bar)
+      progress =
+        (item.interval * 30 - item.daysRemaining) / (item.interval * 30);
+    } else {
+      progress = (item.interval - item.daysRemaining) / item.interval;
+    }
   }
 
   // Add 1 to days remaining to account for the midnight due date
