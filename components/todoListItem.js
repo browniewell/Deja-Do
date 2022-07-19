@@ -15,12 +15,16 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 export default function TodoListItem({item, renewItem, editItem}) {
   return (
     <View style={styles.item}>
-      <MaterialIcon
-        name={item.isRecurring ? 'refresh' : 'done'}
-        size={25}
-        style={styles.refreshIcon}
-        onPress={() => renewItem(item)}
-      />
+      <Pressable
+        hitSlop={5}
+        style={({pressed}) => [{opacity: pressed ? 0.5 : 1.0}]}
+        onPress={() => renewItem(item)}>
+        <MaterialIcon
+          name={item.isRecurring ? 'refresh' : 'done'}
+          size={25}
+          style={styles.refreshIcon}
+        />
+      </Pressable>
       <Pressable
         style={({pressed}) => [{opacity: pressed ? 0.5 : 1.0}, {flex: 1}]}
         onPress={() => {
