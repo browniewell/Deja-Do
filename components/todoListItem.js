@@ -77,6 +77,7 @@ const getProgress = function (item) {
     } else if (item.intervalUnits == 'months') {
       // Not all months are 30 days, but we're doing this just to make things easier.
       // It shouldn't make a big difference as far as the progress bar is concerned (1/30 of the bar)
+      // FIXME: Figure out a way to get accurate monthly item progress
       progress =
         (item.interval * 30 - item.daysRemaining) / (item.interval * 30);
     } else {

@@ -23,6 +23,7 @@ import {v4 as uuidv4} from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DatePicker from 'react-native-date-picker';
 import DropDownPicker from 'react-native-dropdown-picker';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const App = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -57,9 +58,9 @@ const App = () => {
   // Dropdown stuff
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dropdownItems, setDropdownItems] = useState([
-    {label: 'Days', value: 'days'},
     {label: 'Weeks', value: 'weeks'},
     {label: 'Months', value: 'months'},
+    {label: 'Days', value: 'days'},
   ]);
 
   // Refresh when the app becomes active from being in the background
@@ -157,7 +158,9 @@ const App = () => {
                 ),
               ),
           isRecurring,
-          intervalUnits,
+
+          // Default to days if the item is non-recurring
+          isRecurring ? intervalUnits : 'days',
         ),
       ];
       return sortTodos(temp);
@@ -220,7 +223,9 @@ const App = () => {
           ),
     );
     item.isRecurring = isRecurring;
-    item.intervalUnits = intervalUnits;
+
+    // Default to days if the item is non-recurring
+    item.intervalUnits = isRecurring ? intervalUnits : 'days';
 
     // Since this function changes members of the object, it will not trigger the useEffect hook and we must manually store the updated object
     setTodos(sortTodos(todos));
@@ -322,22 +327,7 @@ const App = () => {
               returnKeyType="done"
               value={title}
             />
-            <View style={{flexDirection: 'row'}}>
-              <Text
-                style={{
-                  marginTop: 5,
-                  marginRight: 5,
-                  fontSize: 16,
-                  fontWeight: '500',
-                }}>
-                Recurring
-              </Text>
-              <Switch
-                value={isRecurring}
-                onValueChange={toggleRecurring}
-                style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}
-              />
-            </View>
+
             {isRecurring && (
               <View style={{alignItems: 'center'}}>
                 <Text style={styles.fieldTitle}>Interval</Text>
@@ -383,6 +373,22 @@ const App = () => {
                 onDateChange={dueDateChangeHandler}
                 mode={'date'}
               />
+              <View style={{flexDirection: 'row'}}>
+                <Text
+                  style={{
+                    marginTop: 5,
+                    marginRight: 5,
+                    fontSize: 16,
+                    fontWeight: '500',
+                  }}>
+                  Recurring
+                </Text>
+                <Switch
+                  value={isRecurring}
+                  onValueChange={toggleRecurring}
+                  style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}
+                />
+              </View>
               <View style={{marginTop: 20}}>
                 <Button
                   title="Save"
@@ -418,7 +424,7 @@ const App = () => {
               onChangeText={titleChangeHandler}
               returnKeyType="done"
             />
-            <View style={{flexDirection: 'row'}}>
+            {/* <View style={{flexDirection: 'row'}}>
               <Text
                 style={{
                   marginTop: 5,
@@ -433,7 +439,7 @@ const App = () => {
                 onValueChange={toggleRecurring}
                 style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}
               />
-            </View>
+            </View> */}
             {isRecurring && (
               <View style={{alignItems: 'center'}}>
                 <Text style={styles.fieldTitle}>Interval</Text>
@@ -508,15 +514,30 @@ const App = () => {
         }
       />
 
-      <ActionButton
-        buttonColor="rgba(0, 122, 255, 1)"
-        onPress={() => {
-          setDueDate(new Date());
-          setIsRecurring(true);
-          setIntervalUnits('days');
-          setCreateModalOpen(true);
-        }}
-      />
+      <ActionButton buttonColor="rgba(0, 122, 255, 1)">
+        <ActionButton.Item
+          buttonColor="rgba(0, 122, 255, 1)"
+          title="New Recurring Task"
+          onPress={() => {
+            setDueDate(new Date());
+            setIsRecurring(true);
+            setIntervalUnits('days');
+            setCreateModalOpen(true);
+          }}>
+          <Icon name="refresh" style={styles.actionButtonIcon} />
+        </ActionButton.Item>
+        <ActionButton.Item
+          buttonColor="rgba(0, 122, 255, 1)"
+          title="New Task"
+          onPress={() => {
+            setDueDate(new Date());
+            setIsRecurring(false);
+            setIntervalUnits('days');
+            setCreateModalOpen(true);
+          }}>
+          <Icon name="check" style={styles.actionButtonIcon} />
+        </ActionButton.Item>
+      </ActionButton>
     </SafeAreaView>
   );
 };
