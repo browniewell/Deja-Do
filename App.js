@@ -58,9 +58,9 @@ const App = () => {
   // Dropdown stuff
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dropdownItems, setDropdownItems] = useState([
+    {label: 'Days', value: 'days'},
     {label: 'Weeks', value: 'weeks'},
     {label: 'Months', value: 'months'},
-    {label: 'Days', value: 'days'},
   ]);
 
   // Refresh when the app becomes active from being in the background
@@ -521,6 +521,7 @@ const App = () => {
           onPress={() => {
             setDueDate(new Date());
             setIsRecurring(true);
+            setInterval(1);
             setIntervalUnits('days');
             setCreateModalOpen(true);
           }}>
