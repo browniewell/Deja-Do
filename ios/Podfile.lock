@@ -213,6 +213,8 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.7.2):
     - React-Core
+  - react-native-notification-badge (1.0.5):
+    - React
   - React-perflogger (0.67.4)
   - React-RCTActionSheet (0.67.4):
     - React-Core/RCTActionSheetHeaders (= 0.67.4)
@@ -306,6 +308,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-date-picker (from `../node_modules/react-native-date-picker`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
+  - react-native-notification-badge (from `../node_modules/react-native-notification-badge`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -365,6 +368,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-date-picker"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
+  react-native-notification-badge:
+    :path: "../node_modules/react-native-notification-badge"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -417,6 +422,7 @@ SPEC CHECKSUMS:
   React-logger: a1f028f6d8639a3f364ef80419e5e862e1115250
   react-native-date-picker: 211dead8aeaecab3904a07b967f580e6ea3dee88
   react-native-get-random-values: 30b3f74ca34e30e2e480de48e4add2706a40ac8f
+  react-native-notification-badge: c33673c5f9334703ba8c3ca599b6ba67a2eed2dc
   React-perflogger: 0afaf2f01a47fd0fc368a93bfbb5bd3b26db6e7f
   React-RCTActionSheet: 59f35c4029e0b532fc42114241a06e170b7431a2
   React-RCTAnimation: aae4f4bed122e78bdab72f7118d291d70a932ce2
