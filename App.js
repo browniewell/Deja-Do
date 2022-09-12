@@ -77,6 +77,7 @@ const App = () => {
       ) {
         console.log('App has come to the foreground!');
         setRefresh(!refresh);
+        setBadge(todos);
       }
 
       appState.current = nextAppState;
