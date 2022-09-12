@@ -24,6 +24,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DatePicker from 'react-native-date-picker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {
+  getBadgeCount,
+  setBadgeCount,
+  getNotificationBadgeSetting,
+} from 'react-native-notification-badge';
 
 const App = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -72,6 +77,7 @@ const App = () => {
       ) {
         console.log('App has come to the foreground!');
         setRefresh(!refresh);
+        setBadge(todos);
       }
 
       appState.current = nextAppState;
@@ -122,12 +128,14 @@ const App = () => {
     getData().then(value => {
       console.log(value);
       setTodos(value);
+      setBadge(todos);
     });
   }, []);
 
   // This will run any time an item is added or removed from the list
   useEffect(() => {
     console.log('UseEffect update');
+    setBadge(todos);
     storeData(todos);
   }, [todos]);
 
@@ -136,6 +144,15 @@ const App = () => {
     return temp.sort((itemA, itemB) => {
       return new Date(itemA.dueDate) - new Date(itemB.dueDate);
     });
+  };
+
+  const setBadge = todos => {
+    var dueTodayOrOverdue = todos.filter(
+      todo =>
+        new Date(todo.dueDate) <= new Date(Date.now()).setTimeToMidnight(),
+    );
+    var badgeNum = dueTodayOrOverdue.length;
+    setBadgeCount(badgeNum);
   };
 
   // CREATE
@@ -230,6 +247,7 @@ const App = () => {
     // Since this function changes members of the object, it will not trigger the useEffect hook and we must manually store the updated object
     setTodos(sortTodos(todos));
     storeData(todos);
+    setBadge(todos);
     setEditModalOpen(false);
   };
 
@@ -263,6 +281,7 @@ const App = () => {
 
       // Since this function changes members of the object, it will not trigger the useEffect function and we must manually store the updated object
       setTodos(sortTodos(todos));
+      setBadge(todos);
       storeData(todos);
     }
   };
